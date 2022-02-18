@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+### Create a backup from a directory BACKUP_SOURCE
+###
+### Usage:
+###     $ docker-compose -f <environment>.yml (exec |run --rm) backup_helper backup_django_usg
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+working_dir="$(dirname ${0})"
+source "${working_dir}/_sourced/constants.sh"
+source "${working_dir}/_sourced/messages.sh"
+
+message_welcome "Backing up the folder: ${BACKUP_SOURCE} to ${BACKUP_DIR_PATH}"
+
+backup_filename="${BACKUP_FILE_PREFIX}_django_usg_$(date +'%Y_%m_%dT%H_%M_%S').tar.gz"
+
+cd $BACKUP_SOURCE
+tar -czvf "${BACKUP_DIR_PATH}/${backup_filename}" .
+
+message_success "'${BACKUP_SOURCE}' backup '${backup_filename}' has been created and placed in '${BACKUP_DIR_PATH}'."
