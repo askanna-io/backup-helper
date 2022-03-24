@@ -1,18 +1,31 @@
 # Backup Helper
 
+## Backup PostgreSQL
 
-# Backup postgresql
-docker-compose run backup_helper backup
+```shell
+docker-compose run --rm backup_helper backup
+```
 
-# Backup django USG
-docker-compose run -e BACKUP_SOURCE=/data backup_helper backup_django_usg
+## Backup Django USG
 
+```shell
+docker-compose run --rm -e BACKUP_SOURCE=/data backup_helper backup_django_usg
+```
 
-# List backups
-docker-compose run backup_helper backups
+## List backups
 
-# Restore Postgresql backup
-docker-compose run backup_helper restore <backup file>
+```shell
+docker-compose run --rm backup_helper backups
+```
 
-# Restore Django USG backup
-docker-compose run -e BACKUP_SOURCE=/data backup_helper restore_django_usg <backup file>
+## Restore PostgreSQL backup
+
+```shell
+docker-compose run --rm backup_helper restore <backup file>
+```
+
+## Restore Django USG backup
+
+```bash
+docker-compose run --rm -e BACKUP_SOURCE=/data backup_helper restore_django_usg <backup file>
+```
