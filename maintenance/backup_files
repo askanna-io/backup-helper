@@ -1,0 +1,23 @@
+#!/usr/bin/env bash
+
+### Create a backup from a directory
+###
+### Usage:
+###     $ docker-compose -f <environment>.yml (exec |run --rm) backup_helper backup_files
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+working_dir="$(dirname ${0})"
+source "${working_dir}/_sourced/constants.sh"
+source "${working_dir}/_sourced/messages.sh"
+
+backup_filename="${BACKUP_FILE_PREFIX}_files_$(date +'%Y_%m_%dT%H_%M_%S').tar.gz"
+backup_file_path="${BACKUP_DIR}/${backup_filename}"
+
+message_welcome "Backing up the files in directory '${BACKUP_SOURCE}'..."
+
+tar -czvf ${backup_file_path} . -C ${BACKUP_SOURCE}
+
+message_success "Files in directory '${BACKUP_SOURCE}' backup '${backup_filename}' has been created and placed in '${BACKUP_DIR}'."
