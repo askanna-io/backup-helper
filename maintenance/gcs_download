@@ -1,51 +1,30 @@
 #!/usr/bin/env bash
 
-### Download backups from google bucket
+### Download backups from a Google Cloud Storage Bucket
+###
+### Parameters:
+###     <1> filename of an existing backup on the GCS Bucket
 ###
 ### Usage:
-###     $ docker-compose -f <environment>.yml (exec |run --rm) backup_helper gcs_download
+###     $ docker-compose -f <environment>.yml (exec |run --rm) backup_helper gcs_download <1>
 
 set -o errexit
-set -o errtrace
 set -o pipefail
 set -o nounset
-
-BACKUP_DIR=${BACKUP_DIR:-/backups}
-BOTO_CONFIG_PATH=${BOTO_CONFIG_PATH:-/root/.boto}
-GCS_BUCKET=${GCS_BUCKET:-}
-GCS_KEY_FILE_PATH=${GCS_KEY_FILE_PATH:-}
-DOWNLOAD_FILE=${1}
 
 working_dir="$(dirname ${0})"
 source "${working_dir}/_sourced/constants.sh"
 source "${working_dir}/_sourced/messages.sh"
+source "${working_dir}/_sourced/make_boto_config.sh"
 
-message_welcome "We will download a file from GCS bucket ${GCS_BUCKET}"
+backup_filename="${1}"
 
-cd $BACKUP_DIR
-ls -lathr .
+message_welcome "Download the file '${backup_filename}' from GCS Bucket '${GCS_BUCKET}'..."
 
-download() {
-    if [[ ! "$GCS_BUCKET" =~ gs://* ]]; then
-        GCS_BUCKET="gs://${GCS_BUCKET}"
-    fi
+if [[ ! "$GCS_BUCKET" =~ gs://* ]]; then
+    GCS_BUCKET="gs://${GCS_BUCKET}"
+fi
 
-    if [[ $GCS_KEY_FILE_PATH != "" ]]; then
-        cat <<EOF >$BOTO_CONFIG_PATH
-[Credentials]
-gs_service_key_file = $GCS_KEY_FILE_PATH
-[Boto]
-https_validate_certificates = True
-[GoogleCompute]
-[GSUtil]
-content_language = en
-default_api_version = 2
-parallel_composite_upload_threshold = 150M
-[OAuth2]
-EOF
-    fi
-    echo "Downloading backup ${DOWNLOAD_FILE} from bucket ${GCS_BUCKET}"
-    gsutil cp ${GCS_BUCKET}/${DOWNLOAD_FILE} ${DOWNLOAD_FILE}
-}
+gsutil cp "${GCS_BUCKET}/${backup_filename}" "${BACKUP_DIR}/${backup_filename}"
 
-download
+message_success "The file '${backup_filename}' has been downloaded from GCS Bucket '${GCS_BUCKET}' to directory '${BACKUP_DIR}'."

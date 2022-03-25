@@ -13,6 +13,6 @@ working_dir="$(dirname ${0})"
 source "${working_dir}/_sourced/constants.sh"
 source "${working_dir}/_sourced/messages.sh"
 
-message_welcome "These are the backups you have got on local disk:"
+message_welcome "The following backups are on the directory '${BACKUP_DIR}':"
 
-ls -lht "${BACKUP_DIR_PATH}"
+ls -lht "${BACKUP_DIR}"

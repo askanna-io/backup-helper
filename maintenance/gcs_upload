@@ -1,50 +1,25 @@
 #!/usr/bin/env bash
 
-### Upload backups to google bucket
+### Upload backups to a Google Cloud Storage Bucket
 ###
 ### Usage:
 ###     $ docker-compose -f <environment>.yml (exec |run --rm) backup_helper gcs_upload
 
 set -o errexit
-set -o errtrace
 set -o pipefail
 set -o nounset
-
-BACKUP_DIR=${BACKUP_DIR:-/backups}
-BOTO_CONFIG_PATH=${BOTO_CONFIG_PATH:-/root/.boto}
-GCS_BUCKET=${GCS_BUCKET:-}
-GCS_KEY_FILE_PATH=${GCS_KEY_FILE_PATH:-}
 
 working_dir="$(dirname ${0})"
 source "${working_dir}/_sourced/constants.sh"
 source "${working_dir}/_sourced/messages.sh"
+source "${working_dir}/_sourced/make_boto_config.sh"
 
-message_welcome "We will upload to GCS"
+message_welcome "Upload the backups from directory '${BACKUP_DIR}' to GCS Bucket '${GCS_BUCKET}'..."
 
-cd $BACKUP_DIR
-ls -lathr .
+if [[ ! "${GCS_BUCKET}" =~ gs://* ]]; then
+    GCS_BUCKET="gs://${GCS_BUCKET}"
+fi
 
-upload_to_gcs() {
-    if [[ ! "$GCS_BUCKET" =~ gs://* ]]; then
-        GCS_BUCKET="gs://${GCS_BUCKET}"
-    fi
+gsutil cp -n -r $BACKUP_DIR/. $GCS_BUCKET
 
-    if [[ $GCS_KEY_FILE_PATH != "" ]]; then
-        cat <<EOF >$BOTO_CONFIG_PATH
-[Credentials]
-gs_service_key_file = $GCS_KEY_FILE_PATH
-[Boto]
-https_validate_certificates = True
-[GoogleCompute]
-[GSUtil]
-content_language = en
-default_api_version = 2
-parallel_composite_upload_threshold = 150M
-[OAuth2]
-EOF
-    fi
-    echo "uploading backup archive to GCS bucket=$GCS_BUCKET"
-    gsutil cp -r $BACKUP_DIR $GCS_BUCKET
-}
-
-upload_to_gcs
+message_success "The files from directory '${BACKUP_DIR}' have been uploaded to GCS Bucket '${GCS_BUCKET}'."

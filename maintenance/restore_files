@@ -1,0 +1,40 @@
+#!/usr/bin/env bash
+
+### Restore files from a backup
+###
+### Parameters:
+###     <1> filename of an existing backup
+###
+### Usage:
+###     $ docker-compose -f <environment>.yml (exec |run --rm) backup_helper restore_files <1>
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+working_dir="$(dirname ${0})"
+source "${working_dir}/_sourced/constants.sh"
+source "${working_dir}/_sourced/messages.sh"
+
+if [[ -z ${1+x} ]]; then
+    message_error "Backup filename is not specified yet it is a required parameter. Make sure you provide one and try again."
+    exit 1
+fi
+
+backup_filename="${1}"
+backup_file_path="${BACKUP_DIR}/${1}"
+if [[ ! -f "${backup_file_path}" ]]; then
+    message_error "No backup with the specified filename '${backup_filename}' found. To see a list of available runs on the backup volume, run: 'backup_helper ls'"
+    exit 1
+fi
+
+message_welcome "Restoring files from the '${backup_filename}' backup to ${BACKUP_TARGET}"
+
+if [[ ! -d "${BACKUP_TARGET}" ]]; then
+    message_info "Create folder '${BACKUP_TARGET}' because it does not exist"
+    mkdir -p $BACKUP_TARGET
+fi
+
+tar -xzvf ${backup_file_path} -C ${BACKUP_TARGET}
+
+message_success "The files have been restored from the '${backup_filename}' backup into the directory '${BACKUP_TARGET}'."
