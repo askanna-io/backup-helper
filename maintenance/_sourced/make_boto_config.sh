@@ -1,4 +1,4 @@
-cat <<EOF >$BOTO_CONFIG_PATH
+cat <<EOF >/root/.boto
 [Credentials]
 gs_service_key_file = $GCS_KEY_FILE_PATH
 [Boto]

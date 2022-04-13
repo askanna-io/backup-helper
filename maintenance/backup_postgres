@@ -22,9 +22,9 @@ message_welcome "Backing up the '${POSTGRES_DB}' database..."
 
 export PGHOST="${POSTGRES_HOST}"
 export PGPORT="${POSTGRES_PORT}"
+export PGDATABASE="${POSTGRES_DB}"
 export PGUSER="${POSTGRES_USER}"
 export PGPASSWORD="${POSTGRES_PASSWORD}"
-export PGDATABASE="${POSTGRES_DB}"
 
 backup_filename="${BACKUP_FILE_PREFIX}_postgres_$(date +'%Y_%m_%dT%H_%M_%S').sql.gz"
 
