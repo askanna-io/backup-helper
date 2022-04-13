@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 
-### Restore database from a backup
+### Restore PostgreSQL database from a backup
 ###
 ### Parameters:
 ###     <1> filename of an existing backup

@@ -20,6 +20,6 @@ if [[ ! "${GCS_BUCKET}" =~ gs://* ]]; then
     GCS_BUCKET="gs://${GCS_BUCKET}"
 fi
 
-gsutil cp -n -r $BACKUP_DIR/. $GCS_BUCKET
+gsutil -m cp -n -r $BACKUP_DIR/. $GCS_BUCKET
 
 message_success "The files from directory '${BACKUP_DIR}' have been uploaded to GCS Bucket '${GCS_BUCKET}'."
