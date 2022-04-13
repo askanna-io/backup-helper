@@ -52,14 +52,29 @@ To use the Google Cloud Storage features, you need to have a Google service acco
 To authenticate, you need to have the associated private JSON key of the service account or
 [create a new service account JSON key](https://cloud.google.com/iam/docs/creating-managing-service-account-keys).
 
+## Daily backup
+
+There is a backup, upload and clean script in this image's directory `/etc/periodic/daily`. This backup script run the
+following commands:
+
+- backup_postgres
+- backup_files
+- gcs_upload
+- backup_clean
+
+When you start the image, the daily backup is not scheduled because the cron daemon is not started by default. When
+you run the image with the command `crond -f` it will start the cron daemon and schedule the daily backup. See also
+['How we use it'](#how-we-use-it).
+
 ## How we use it
 
 We use the Backup Helper for the AskAnna project that we run as a Docker Stack. In our
-[Docker Compose](https://docs.docker.com/compose/) file we have a service named `backup_helper`:
+[Docker Compose](https://docs.docker.com/compose/) file we have a service named `backup-helper`:
 
 ```docker
 backup_helper:
   image: askanna/backup-helper
+  command: crond -f
   volumes:
     - backup_volume:/backups
     - storage_volume:/data
@@ -72,6 +87,8 @@ backup_helper:
 
 With the Backup Helper available as a service in the Docker Stack, we can perform backup tasks. Depending on the
 backup task, we run one or multiple of the commands below.
+
+> If you don't want to schedule a daily backup, remove the line `command: crond -f`.
 
 ## Make backup
 

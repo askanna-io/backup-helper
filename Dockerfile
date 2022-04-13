@@ -17,7 +17,12 @@ RUN apk add --no-cache --update \
     && apk del --no-cache build-deps \
     && ln -s /opt/gsutil/gsutil /usr/local/bin/gsutil
 
-COPY ./maintenance /usr/local/bin/maintenance
-RUN chmod +x /usr/local/bin/maintenance/*
-RUN mv /usr/local/bin/maintenance/* /usr/local/bin \
-    && rmdir /usr/local/bin/maintenance
+COPY ./backup_scripts /usr/local/bin/backup_scripts
+RUN chmod +x /usr/local/bin/backup_scripts/* \
+    && mv /usr/local/bin/backup_scripts/* /usr/local/bin \
+    && rmdir /usr/local/bin/backup_scripts
+
+COPY ./cron_scripts/daily /etc/periodic/daily/cron_scripts
+RUN chmod +x /etc/periodic/daily/cron_scripts/* \
+    && mv /etc/periodic/daily/cron_scripts/* /etc/periodic/daily \
+    && rmdir /etc/periodic/daily/cron_scripts
