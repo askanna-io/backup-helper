@@ -1,0 +1,38 @@
+#!/usr/bin/env bash
+
+### Clean backups older than 'x' days
+###
+### Usage:
+###     $ docker-compose -f <environment>.yml (exec |run --rm) backup_helper backup_clean
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+working_dir="$(dirname ${0})"
+source "${working_dir}/_sourced/constants.sh"
+source "${working_dir}/_sourced/messages.sh"
+
+message_welcome "Time to remove backup files older than ${BACKUP_KEEP_DAYS} days"
+message_newline
+
+tmp_file=`mktemp -t find.XXXXXX`
+find "${BACKUP_DIR}" -type f -mtime +${BACKUP_KEEP_DAYS}  >> tmp_file
+count_files=`wc -l ${tmp_file} | awk '{ print $1 }'`
+
+if [ ${count_files} -eq 0 ]
+then
+   message_info "Nothing to remove because there are no backup files older than ${BACKUP_KEEP_DAYS} days."
+else
+   message_info "The following backups will be removed:"
+   cat ${tmp_file}
+
+   message_newline
+   message_info "Removing the above backup files..."
+
+   find "${BACKUP_DIR}" -type f -mtime +${BACKUP_KEEP_DAYS} -exec rm -- '{}' \;
+
+   message_success "The backup files older than ${BACKUP_KEEP_DAYS} days are removed."
+fi
+
+rm ${tmp_file}

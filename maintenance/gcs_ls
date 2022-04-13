@@ -20,4 +20,4 @@ if [[ ! "${GCS_BUCKET}" =~ gs://* ]]; then
     GCS_BUCKET="gs://${GCS_BUCKET}"
 fi
 
-gsutil ls -lrh ${GCS_BUCKET}
+gsutil -m ls -lrh ${GCS_BUCKET}

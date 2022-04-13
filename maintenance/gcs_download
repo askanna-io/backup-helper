@@ -25,6 +25,6 @@ if [[ ! "$GCS_BUCKET" =~ gs://* ]]; then
     GCS_BUCKET="gs://${GCS_BUCKET}"
 fi
 
-gsutil cp "${GCS_BUCKET}/${backup_filename}" "${BACKUP_DIR}/${backup_filename}"
+gsutil -m cp "${GCS_BUCKET}/${backup_filename}" "${BACKUP_DIR}/${backup_filename}"
 
 message_success "The file '${backup_filename}' has been downloaded from GCS Bucket '${GCS_BUCKET}' to directory '${BACKUP_DIR}'."
