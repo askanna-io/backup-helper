@@ -18,16 +18,32 @@ if [[ "${POSTGRES_USER}" == "postgres" ]]; then
     exit 1
 fi
 
-message_welcome "Backing up the '${POSTGRES_DB}' database..."
-
 export PGHOST="${POSTGRES_HOST}"
 export PGPORT="${POSTGRES_PORT}"
 export PGDATABASE="${POSTGRES_DB}"
 export PGUSER="${POSTGRES_USER}"
 export PGPASSWORD="${POSTGRES_PASSWORD}"
 
-backup_filename="${BACKUP_FILE_PREFIX}_postgres_$(date +'%Y_%m_%dT%H_%M_%S').sql.gz"
+if [[ ! -z "$POSTGRES_DATABASES" ]]; then
+    message_welcome "Backing up multiple databases: ${POSTGRES_DATABASES}"
+    message_newline
 
-pg_dump | gzip >"${BACKUP_DIR}/${backup_filename}"
+    for database in ${POSTGRES_DATABASES}; do
+        message_info "Backing up database '${database}'..."
 
-message_success "'${POSTGRES_DB}' database backup '${backup_filename}' has been created and placed in '${BACKUP_DIR}'."
+        backup_filename="${BACKUP_FILE_PREFIX}_postgres_${database}_$(date +'%Y_%m_%dT%H_%M_%S').sql.gz"
+        pg_dump ${database} | gzip >"${BACKUP_DIR}/${backup_filename}"
+
+        message_info "Database '${database}' backed up to '${backup_filename}'"
+        message_newline
+    done
+
+    message_success "All databases backed up and can be found in directory '${BACKUP_DIR}'."
+else
+    message_welcome "Backing up database '${POSTGRES_DB}'..."
+
+    backup_filename="${BACKUP_FILE_PREFIX}_postgres_$(date +'%Y_%m_%dT%H_%M_%S').sql.gz"
+    pg_dump | gzip >"${BACKUP_DIR}/${backup_filename}"
+
+    message_success "Database '${POSTGRES_DB}' backed up to '${backup_filename}' in '${BACKUP_DIR}'."
+fi

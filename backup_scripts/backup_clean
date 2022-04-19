@@ -17,7 +17,7 @@ message_welcome "Time to remove backup files older than ${BACKUP_KEEP_DAYS} days
 message_newline
 
 tmp_file=`mktemp -t find.XXXXXX`
-find "${BACKUP_DIR}" -type f -mtime +${BACKUP_KEEP_DAYS}  >> ${tmp_file}
+find "${BACKUP_DIR}" -type f -mtime +${BACKUP_KEEP_DAYS} >> ${tmp_file}
 count_files=`wc -l ${tmp_file} | awk '{ print $1 }'`
 
 if [ ${count_files} -eq 0 ]
