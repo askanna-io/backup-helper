@@ -27,7 +27,8 @@ Via environment variables you can configure the Backup Helper.
 | -------------------- | -------- | ------------------ | ------------------------------------------------------------ |
 | `POSTGRES_HOST`      | No       | `localhost`        | The PostgreSQL database server host                          |
 | `POSTGRES_PORT`      | No       | `5432`             | The PostgreSQL database server port                          |
-| `POSTGRES_DB`        | No       |                    | The database to backup. By default, the Backup Helper makes a backup of all the databases. |
+| `POSTGRES_DB`        | No       |                    | The database to backup. If this variable is not set, the `POSTGRES_USER` name is used (ref. [documentation](https://www.postgresql.org/docs/current/app-pgdump.html)). |
+| `POSTGRES_DATABASES` | No       |                    | The databases to backup. If both `POSTGRES_DATABASES` and `POSTGRES_DB` are provided, the `POSTGRES_DATABASES` variable will be used.<br>&nbsp;<br>Format: `database_1 database_2 database_3` (without quotation marks) |
 | `POSTGRES_USER`      | No       |                    | The PostgreSQL database user                                 |
 | `POSTGRES_PASSWORD`  | No       |                    | The PostgreSQL database password                             |
 
