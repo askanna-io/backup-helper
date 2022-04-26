@@ -11,8 +11,6 @@ build image:
     name: gcr.io/kaniko-project/executor:debug
     entrypoint: [""]
   rules:
-    - if: ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "trigger")
-      when: never
     - if: '$CI_COMMIT_BRANCH == "main"'
       variables:
         DESTINATION: $CI_REGISTRY_IMAGE:latest
@@ -30,8 +28,6 @@ build image:
 verify image:
   stage: verify_build
   rules:
-    - if: ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "trigger")
-      when: never
     - if: '$CI_COMMIT_BRANCH == "main"'
       variables:
         DOCKER_IMAGE: $CI_REGISTRY_IMAGE:latest
@@ -54,8 +50,6 @@ publish_to_docker:
   stage: publish
   image: docker:latest
   rules:
-    - if: ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "trigger")
-      when: never
     - if: '$CI_COMMIT_BRANCH == "main"'
       variables:
         DOCKER_TAG: latest

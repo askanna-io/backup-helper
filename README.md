@@ -3,6 +3,20 @@
 The Backup Helper aims to help you make and restore backups of your project files and PostgreSQL database.
 Also, you can upload and download backup files to Google Cloud Storage.
 
+A list of commands that you can run with this container:
+
+- `backup_postgres`: make a backup of PostgreSQL database(s)
+- `backup_files`: make a backup of files and directories
+- `backup_ls`: list local backup files
+- `backup_clean`: remove local backup files
+- `restore_postgres`: restore a backup of a PostgreSQL database
+- `restore_files`: restore a backup of files and directories
+- `gcs_upload`: upload backup files to Google Cloud Storage
+- `gcs_download`: download a backup file from Google Cloud Storage
+- `gcs_ls`: list backup files present in Google Cloud Storage
+
+In the rest of this README, you can find more information about how to run and configure these commands.
+
 ## Docker image
 
 The Docker image of the Backup Helper is available on [Docker Hub](https://hub.docker.com/r/askanna/backup-helper):
@@ -19,7 +33,7 @@ Via environment variables you can configure the Backup Helper.
 | -------------------- | -------- | ------------------ | ------------------------------------------------------------ |
 | `BACKUP_DIR`         | No       | `/backups`         | The path where the backups will be saved                     |
 | `BACKUP_FILE_PREFIX` | No       | `backup`           | An optional prefix for the backup filename                   |
-| `BACKUP_KEEP_DAYS`   | No       | `7`                | The number of days you want to keep local backup files. The Backup Helper only removes local backup files when you run `backup_clean`. |
+| `BACKUP_KEEP_DAYS`   | No       | `NONE`             | The number of days you want to keep local backup files. The Backup Helper only removes local backup files when you run `backup_clean`.<br>&nbsp;<br>`NONE`: remove all local backups<br>`0`: keep backups that are modified less than 24 hours ago<br>`1`: keep backups that are modified less than 48 hours ago<br>`n`: keep backups that are modified less than `(n + 1) * 24` hours ago |
 
 ### PostgreSQL configuration
 
@@ -58,10 +72,11 @@ To authenticate, you need to have the associated private JSON key of the service
 There is a backup, upload and clean script in this image's directory `/etc/periodic/daily`. This backup script run the
 following commands:
 
+- gcs_upload
+- backup_clean
 - backup_postgres
 - backup_files
 - gcs_upload
-- backup_clean
 
 When you start the image, the daily backup is not scheduled because the cron daemon is not started by default. When
 you run the image with the command `crond -f` it will start the cron daemon and schedule the daily backup. See also
