@@ -8,18 +8,24 @@
 set -o errexit
 set -o pipefail
 set -o nounset
+shopt -s nullglob
 
 working_dir="$(dirname ${0})"
 source "${working_dir}/_sourced/constants.sh"
 source "${working_dir}/_sourced/messages.sh"
 source "${working_dir}/_sourced/make_boto_config.sh"
 
-message_welcome "Upload the backups from directory '${BACKUP_DIR}' to GCS Bucket '${GCS_BUCKET}'..."
+message_welcome "Upload the files from directory '${BACKUP_DIR}' to GCS Bucket '${GCS_BUCKET}'..."
 
-if [[ ! "${GCS_BUCKET}" =~ gs://* ]]; then
-    GCS_BUCKET="gs://${GCS_BUCKET}"
+files=(${BACKUP_DIR}/*)
+if [ ${#files[@]} -gt 0 ]; then
+    if [[ ! "${GCS_BUCKET}" =~ gs://* ]]; then
+        GCS_BUCKET="gs://${GCS_BUCKET}"
+    fi
+
+    gsutil -m cp -n -r $BACKUP_DIR/. $GCS_BUCKET
+
+    message_success "The files from directory '${BACKUP_DIR}' have been uploaded to GCS Bucket '${GCS_BUCKET}'."
+else
+    message_info "Nothing to upload because there are no files in the directory '${BACKUP_DIR}'."
 fi
-
-gsutil -m cp -n -r $BACKUP_DIR/. $GCS_BUCKET
-
-message_success "The files from directory '${BACKUP_DIR}' have been uploaded to GCS Bucket '${GCS_BUCKET}'."

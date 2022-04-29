@@ -14,9 +14,9 @@ source "${working_dir}/_sourced/constants.sh"
 source "${working_dir}/_sourced/messages.sh"
 
 if [[ "${BACKUP_KEEP_DAYS}" == "NONE" ]]; then
-   message_welcome "Time to remove backup files in directory ${BACKUP_DIR}."
+   message_welcome "Time to remove backup files in directory '${BACKUP_DIR}'."
 else
-   message_welcome "Time to remove backup files older than ${BACKUP_KEEP_DAYS} days."
+   message_welcome "Time to remove backup files older than ${BACKUP_KEEP_DAYS} days in directory '${BACKUP_DIR}'."
 fi
 message_newline
 
@@ -30,9 +30,9 @@ count_files=`wc -l ${tmp_file} | awk '{ print $1 }'`
 
 if [ ${count_files} -eq 0 ]; then
    if [[ "${BACKUP_KEEP_DAYS}" == "NONE" ]]; then
-      message_info "No files to remove in directory ${BACKUP_DIR}."
+      message_info "No files to remove in directory '${BACKUP_DIR}'."
    else
-      message_info "Nothing to remove because there are no backup files older than ${BACKUP_KEEP_DAYS} days."
+      message_info "Nothing to remove because there are no backup files older than ${BACKUP_KEEP_DAYS} days in directory '${BACKUP_DIR}'."
    fi
 else
    message_info "The following backups will be removed:"
@@ -43,10 +43,10 @@ else
 
    if [[ "${BACKUP_KEEP_DAYS}" == "NONE" ]]; then
       find "${BACKUP_DIR}" -type f -exec rm -- '{}' \;
-      message_success "The backup files in directory ${BACKUP_DIR} are removed."
+      message_success "The backup files in directory '${BACKUP_DIR}' are removed."
    else
       find "${BACKUP_DIR}" -type f -mtime +${BACKUP_KEEP_DAYS} -exec rm -- '{}' \;
-      message_success "The backup files older than ${BACKUP_KEEP_DAYS} days are removed."
+      message_success "The backup files older than ${BACKUP_KEEP_DAYS} days in directory '${BACKUP_DIR}' are removed."
    fi
 fi
 
