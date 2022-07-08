@@ -14,9 +14,9 @@ build image:
     - if: '$CI_COMMIT_BRANCH == "main"'
       variables:
         DESTINATION: $CI_REGISTRY_IMAGE:latest
-    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+$/'
+    - if: '$CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+$/'
       variables:
-        DESTINATION: $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG:1}
+        DESTINATION: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
     - if: '$CI_PIPELINE_SOURCE == "push"'
       variables:
         DESTINATION: $CI_REGISTRY_IMAGE/review:$CI_COMMIT_REF_SLUG
@@ -31,9 +31,9 @@ verify image:
     - if: '$CI_COMMIT_BRANCH == "main"'
       variables:
         DOCKER_IMAGE: $CI_REGISTRY_IMAGE:latest
-    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+$/'
+    - if: '$CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+$/'
       variables:
-        DOCKER_IMAGE: $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG:1}
+        DOCKER_IMAGE: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
     - if: '$CI_PIPELINE_SOURCE == "push"'
       variables:
         DOCKER_IMAGE: $CI_REGISTRY_IMAGE/review:$CI_COMMIT_REF_SLUG
@@ -53,9 +53,9 @@ publish_to_docker:
     - if: '$CI_COMMIT_BRANCH == "main"'
       variables:
         DOCKER_TAG: latest
-    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+$/'
+    - if: '$CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+$/'
       variables:
-        DOCKER_TAG: ${CI_COMMIT_TAG:1}
+        DOCKER_TAG: $CI_COMMIT_TAG
   services:
     - docker:dind
   tags:
@@ -82,7 +82,7 @@ publish_to_public_repos:
     - if: '$CI_COMMIT_BRANCH == "main"'
       variables:
         TARGET: HEAD:main
-    - if: '$CI_COMMIT_TAG =~ /^v[0-9]+\.[0-9]+\.[0-9]+$/'
+    - if: '$CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+$/'
       variables:
         TARGET: refs/tags/$CI_COMMIT_TAG
   before_script:
