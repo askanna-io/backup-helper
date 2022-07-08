@@ -9,7 +9,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-working_dir="$(dirname ${0})"
+working_dir="$(dirname "${0}")"
 source "${working_dir}/_sourced/constants.sh"
 source "${working_dir}/_sourced/messages.sh"
 
@@ -24,7 +24,7 @@ export PGDATABASE="${POSTGRES_DB}"
 export PGUSER="${POSTGRES_USER}"
 export PGPASSWORD="${POSTGRES_PASSWORD}"
 
-if [[ ! -z "$POSTGRES_DATABASES" ]]; then
+if [[ -n "$POSTGRES_DATABASES" ]]; then
     message_welcome "Backing up multiple databases: ${POSTGRES_DATABASES}"
     message_newline
 
@@ -32,7 +32,7 @@ if [[ ! -z "$POSTGRES_DATABASES" ]]; then
         message_info "Backing up database '${database}'..."
 
         backup_filename="${BACKUP_FILE_PREFIX}_postgres_${database}_$(date +'%Y_%m_%dT%H_%M_%S').sql.gz"
-        pg_dump ${database} | gzip >"${BACKUP_DIR}/${backup_filename}"
+        pg_dump -v ${database} | gzip > "${BACKUP_DIR}/${backup_filename}"
 
         message_info "Database '${database}' backed up to '${backup_filename}'"
         message_newline

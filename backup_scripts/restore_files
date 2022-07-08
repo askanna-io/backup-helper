@@ -12,7 +12,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-working_dir="$(dirname ${0})"
+working_dir="$(dirname "${0}")"
 source "${working_dir}/_sourced/constants.sh"
 source "${working_dir}/_sourced/messages.sh"
 
@@ -32,9 +32,13 @@ message_welcome "Restoring files from the '${backup_filename}' backup to ${BACKU
 
 if [[ ! -d "${BACKUP_TARGET}" ]]; then
     message_info "Create folder '${BACKUP_TARGET}' because it does not exist"
-    mkdir -p $BACKUP_TARGET
+    mkdir -p "$BACKUP_TARGET"
 fi
 
-tar -xzvf ${backup_file_path} -C ${BACKUP_TARGET}
+if [ "$BACKUP_ZIP_FILES" = true ] ; then
+    tar -xzvf "${backup_file_path}" -C "${BACKUP_TARGET}"
+else
+    tar -xvf "${backup_file_path}" -C "${BACKUP_TARGET}"
+fi
 
 message_success "The files have been restored from the '${backup_filename}' backup into the directory '${BACKUP_TARGET}'."

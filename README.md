@@ -34,6 +34,7 @@ Via environment variables you can configure the Backup Helper.
 | `BACKUP_DIR`         | No       | `/backups`         | The path where the backups will be saved                     |
 | `BACKUP_FILE_PREFIX` | No       | `backup`           | An optional prefix for the backup filename                   |
 | `BACKUP_KEEP_DAYS`   | No       | `NONE`             | The number of days you want to keep local backup files. The Backup Helper only removes local backup files when you run `backup_clean`.<br>&nbsp;<br>`NONE`: remove all local backups<br>`0`: keep backups that are modified less than 24 hours ago<br>`1`: keep backups that are modified less than 48 hours ago<br>`n`: keep backups that are modified less than `(n + 1) * 24` hours ago |
+| `BACKUP_ZIP_FILES`   | No       | `true`             | `true` / `false`; if set to `true`, file compression with gzip will be applied. To speed up the backup of files, you can set `BACKUP_ZIP_FILES` to `false`. |
 
 ### PostgreSQL configuration
 
