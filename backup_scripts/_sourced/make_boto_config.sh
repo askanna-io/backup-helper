@@ -1,3 +1,5 @@
+#!/usr/bin/env bash
+
 cat <<EOF >/root/.boto
 [Credentials]
 gs_service_key_file = $GCS_KEY_FILE_PATH

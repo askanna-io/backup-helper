@@ -9,7 +9,7 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
-working_dir="$(dirname ${0})"
+working_dir="$(dirname "${0}")"
 source "${working_dir}/_sourced/constants.sh"
 source "${working_dir}/_sourced/messages.sh"
 
@@ -20,15 +20,15 @@ else
 fi
 message_newline
 
-tmp_file=`mktemp -t find.XXXXXX`
+tmp_file=$(mktemp -t find.XXXXXX)
 if [[ "${BACKUP_KEEP_DAYS}" == "NONE" ]]; then
-   find "${BACKUP_DIR}" -type f >> ${tmp_file}
+   find "${BACKUP_DIR}" -type f >> "${tmp_file}"
 else
-   find "${BACKUP_DIR}" -type f -mtime +${BACKUP_KEEP_DAYS} >> ${tmp_file}
+   find "${BACKUP_DIR}" -type f -mtime +"${BACKUP_KEEP_DAYS}" >> "${tmp_file}"
 fi
-count_files=`wc -l ${tmp_file} | awk '{ print $1 }'`
+count_files=$(wc -l "${tmp_file}" | awk '{ print $1 }')
 
-if [ ${count_files} -eq 0 ]; then
+if [ "${count_files}" -eq 0 ]; then
    if [[ "${BACKUP_KEEP_DAYS}" == "NONE" ]]; then
       message_info "No files to remove in directory '${BACKUP_DIR}'."
    else
@@ -36,7 +36,7 @@ if [ ${count_files} -eq 0 ]; then
    fi
 else
    message_info "The following backups will be removed:"
-   cat ${tmp_file}
+   cat "${tmp_file}"
 
    message_newline
    message_info "Removing the above backup files..."
@@ -45,9 +45,9 @@ else
       find "${BACKUP_DIR}" -type f -exec rm -- '{}' \;
       message_success "The backup files in directory '${BACKUP_DIR}' are removed."
    else
-      find "${BACKUP_DIR}" -type f -mtime +${BACKUP_KEEP_DAYS} -exec rm -- '{}' \;
+      find "${BACKUP_DIR}" -type f -mtime +"${BACKUP_KEEP_DAYS}" -exec rm -- '{}' \;
       message_success "The backup files older than ${BACKUP_KEEP_DAYS} days in directory '${BACKUP_DIR}' are removed."
    fi
 fi
 
-rm ${tmp_file}
+rm "${tmp_file}"
