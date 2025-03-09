@@ -17,10 +17,10 @@ message_welcome "Backing up the files in directory '${BACKUP_SOURCE}'..."
 
 if [ "$BACKUP_ZIP_FILES" = true ] ; then
   backup_filename="${BACKUP_FILE_PREFIX}_files_$(date +'%Y_%m_%dT%H_%M_%S').tar.gz"
-  tar -czvf "${BACKUP_DIR}/${backup_filename}" . -C "${BACKUP_SOURCE}"
+  tar --create --gzip --file="${BACKUP_DIR}/${backup_filename}" --directory="${BACKUP_SOURCE}" .
 else
   backup_filename="${BACKUP_FILE_PREFIX}_files_$(date +'%Y_%m_%dT%H_%M_%S').tar"
-  tar -cvf "${BACKUP_DIR}/${backup_filename}" . -C "${BACKUP_SOURCE}"
+  tar --create --file="${BACKUP_DIR}/${backup_filename}" --directory="${BACKUP_SOURCE}" .
 fi
 
 message_success "Files in directory '${BACKUP_SOURCE}' backup '${backup_filename}' has been created and placed in '${BACKUP_DIR}'."

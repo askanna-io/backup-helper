@@ -1,21 +1,25 @@
-FROM alpine:3
+FROM docker.io/python:3.12-slim AS python
 LABEL maintainer="AskAnna"
 
-RUN apk add --no-cache --update \
-    bash \
-    postgresql-client \
-    python3 \
-    && apk add --no-cache --update --virtual build-deps \
-    curl \
-    gcc \
-    musl-dev \
-    python3-dev \
-    py3-setuptools \
-    py3-pip \
-    && pip3 install --no-cache-dir crcmod \
+RUN apt update && apt install --no-install-recommends --assume-yes \
+        curl \
+        lsb-release \
+        wget \
+        gnupg \
+    && sh -c 'echo "deb http://apt.postgresql.org/pub/repos/apt $(lsb_release -cs)-pgdg main" > /etc/apt/sources.list.d/pgdg.list' \
+    && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
+    && apt update && apt install --no-install-recommends --assume-yes \
+        postgresql-client \
+    && pip install --no-cache-dir crcmod \
     && curl -qLs https://storage.googleapis.com/pub/gsutil.tar.gz | tar -C /opt -zxf - \
-    && apk del --no-cache build-deps \
-    && ln -s /opt/gsutil/gsutil /usr/local/bin/gsutil
+    && ln -s /opt/gsutil/gsutil /usr/local/bin/gsutil \
+    && apt remove --assume-yes \
+        curl \
+        lsb-release \
+        wget \
+        gnupg \
+    && apt purge --assume-yes --auto-remove --option APT::AutoRemove::RecommendsImportant=false \
+    && rm -rf /var/lib/apt/lists/*
 
 COPY ./backup_scripts /usr/local/bin/backup_scripts
 RUN chmod +x /usr/local/bin/backup_scripts/* \
