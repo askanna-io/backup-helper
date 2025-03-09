@@ -10,6 +10,7 @@ RUN apt update && apt install --no-install-recommends --assume-yes \
     && wget --quiet -O - https://www.postgresql.org/media/keys/ACCC4CF8.asc | apt-key add - \
     && apt update && apt install --no-install-recommends --assume-yes \
         postgresql-client \
+        cron \
     && pip install --no-cache-dir crcmod \
     && curl -qLs https://storage.googleapis.com/pub/gsutil.tar.gz | tar -C /opt -zxf - \
     && ln -s /opt/gsutil/gsutil /usr/local/bin/gsutil \
