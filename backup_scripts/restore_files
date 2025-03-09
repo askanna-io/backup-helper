@@ -36,9 +36,9 @@ if [[ ! -d "${BACKUP_TARGET}" ]]; then
 fi
 
 if [ "$BACKUP_ZIP_FILES" = true ] ; then
-    tar -xzvf "${backup_file_path}" -C "${BACKUP_TARGET}"
+    tar --extract --gzip --file="${backup_file_path}" --directory="${BACKUP_TARGET}"
 else
-    tar -xvf "${backup_file_path}" -C "${BACKUP_TARGET}"
+    tar --extract --file="${backup_file_path}" --directory="${BACKUP_TARGET}"
 fi
 
 message_success "The files have been restored from the '${backup_filename}' backup into the directory '${BACKUP_TARGET}'."
