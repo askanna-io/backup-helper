@@ -27,7 +27,6 @@ RUN chmod +x /usr/local/bin/backup_scripts/* \
     && mv /usr/local/bin/backup_scripts/* /usr/local/bin \
     && rmdir /usr/local/bin/backup_scripts
 
-COPY ./cron_scripts/daily /tmp/cron_scripts/daily
-RUN chmod +x /tmp/cron_scripts/daily/* \
-    && mv /tmp/cron_scripts/daily/* /etc/cron.daily \
-    && rm -r /tmp/cron_scripts
+COPY cron/crontab /etc/cron.d/crontab
+RUN chmod +x /etc/cron.d/crontab \
+    && crontab /etc/cron.d/crontab

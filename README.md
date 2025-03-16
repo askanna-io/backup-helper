@@ -5,6 +5,7 @@ Also, you can upload and download backup files to Google Cloud Storage.
 
 A list of commands that you can run with this container:
 
+- `full_backup_procedure`: run a full backup procedure (upload, clean, backup postgres & files and upload)
 - `backup_postgres`: make a backup of PostgreSQL database(s)
 - `backup_files`: make a backup of files and directories
 - `backup_ls`: list local backup files
@@ -70,17 +71,8 @@ To authenticate, you need to have the associated private JSON key of the service
 
 ## Daily backup
 
-There is a backup, upload and clean script in this image's directory `/etc/periodic/daily`. This backup script run the
-following commands:
-
-- gcs_upload
-- backup_clean
-- backup_postgres
-- backup_files
-- gcs_upload
-
 When you start the image, the daily backup is not scheduled because the cron daemon is not started by default. When
-you run the image with the command `crond -f` it will start the cron daemon and schedule the daily backup. See also
+you run the image with the command `cron -f` it will start the cron daemon and schedule the daily backup. See also
 ['How we use it'](#how-we-use-it).
 
 ## How we use it
@@ -91,7 +83,7 @@ We use the Backup Helper for the AskAnna project that we run as a Docker Stack. 
 ```docker
 backup_helper:
   image: askanna/backup-helper
-  command: crond -f
+  command: cron -f
   volumes:
     - backup_volume:/backups
     - storage_volume:/data
@@ -105,9 +97,25 @@ backup_helper:
 With the Backup Helper available as a service in the Docker Stack, we can perform backup tasks. Depending on the
 backup task, we run one or multiple of the commands below.
 
-> If you don't want to schedule a daily backup, remove the line `command: crond -f`.
+> If you don't want to schedule a daily backup, remove the line `command: cron -f`.
 
 ## Make backup
+
+### Full backup procedure
+
+```shell
+docker-compose run --rm backup_helper full_backup_procedure
+```
+
+This command actually runs the following commands:
+
+- gcs_upload
+- backup_clean
+- backup_postgres
+- backup_files
+- gcs_upload
+
+The full backup procedure is also the command used for the daily backup.
 
 ### Backup PostgreSQL
 
