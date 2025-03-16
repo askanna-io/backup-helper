@@ -26,8 +26,9 @@ build_image:
     DOCKER_HOST: tcp://docker:2375
   cache:
     paths:
-      - .docker-cache
+      - .docker-cache/
   before_script:
+    - mkdir -p .docker-cache
     - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin
     - echo "Building image to" $DOCKER_IMAGE
     - docker buildx create --use --driver docker-container
@@ -38,6 +39,7 @@ build_image:
       --cache-from type=local,src=.docker-cache \
       --cache-to type=local,dest=.docker-cache \
       --pull \
+      --provenance=false \
       --push \
       .
   after_script:
