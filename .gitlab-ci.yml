@@ -1,32 +1,8 @@
 stages:
   - build
-  - verify_build
   - publish
 
-build image:
-  stage: build
-  tags:
-    - kubernetes
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: [""]
-  rules:
-    - if: '$CI_COMMIT_BRANCH == "main"'
-      variables:
-        DESTINATION: $CI_REGISTRY_IMAGE:latest
-    - if: '$CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+$/'
-      variables:
-        DESTINATION: $CI_REGISTRY_IMAGE:$CI_COMMIT_TAG
-    - if: '$CI_PIPELINE_SOURCE == "push"'
-      variables:
-        DESTINATION: $CI_REGISTRY_IMAGE/review:$CI_COMMIT_REF_SLUG
-  script:
-    - echo "Building image to" $DESTINATION
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $DESTINATION 
-
-verify image:
-  stage: verify_build
+.variables: &variables
   rules:
     - if: '$CI_COMMIT_BRANCH == "main"'
       variables:
@@ -37,19 +13,33 @@ verify image:
     - if: '$CI_PIPELINE_SOURCE == "push"'
       variables:
         DOCKER_IMAGE: $CI_REGISTRY_IMAGE/review:$CI_COMMIT_REF_SLUG
+
+build_image:
+  stage: build    
+  <<: *variables
+  image:
+    name: gcr.io/kaniko-project/executor:debug
+    entrypoint: [""]
+  script:
+    - echo "Building image to" $DOCKER_IMAGE
+    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
+    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $DOCKER_IMAGE 
+
+verify_image:
+  stage: build
+  needs:
+    - job: build_image      
+  <<: *variables
   image: $DOCKER_IMAGE
-  tags:
-    - kubernetes
   script:
     - echo "Using Docker image" $DOCKER_IMAGE
     - pg_dump --version
     - tar --version
     - gsutil version
 
-publish_to_public_repos:
+.publish_to_public_repos:
   stage: publish
-  tags:
-    - kubernetes
+  needs: []
   allow_failure: true
   rules:
     - if: ($CI_PIPELINE_SOURCE == "schedule" || $CI_PIPELINE_SOURCE == "trigger")
@@ -60,11 +50,13 @@ publish_to_public_repos:
     - if: '$CI_COMMIT_TAG =~ /^[0-9]+\.[0-9]+\.[0-9]+$/'
       variables:
         TARGET: refs/tags/$CI_COMMIT_TAG
+    - if: $CI_COMMIT_BRANCH
+      when: manual
+      variables:
+        TARGET: HEAD:$CI_COMMIT_BRANCH
   before_script:
     - apt-get update -y && apt-get install openssh-client git curl -y
     - eval $(ssh-agent -s)
-    - echo "$SSH_PRIVATE_KEY_GITLAB_COM" | tr -d '\r' | ssh-add - > /dev/null
-    - echo "${SSH_PRIVATE_KEY_GITHUB_COM}" | tr -d '\r' | ssh-add - > /dev/null
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
     - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
@@ -72,8 +64,27 @@ publish_to_public_repos:
     - chmod 644 ~/.ssh/known_hosts
     - git config --global user.email "hello@askanna.io"
     - git config --global user.name "AskAnna Robot"
+    - git remote remove public || true
+    - git remote add public $PUBLIC_REPO
   script:
-    - git remote add gitlab git@gitlab.com:askanna/backup-helper.git
-    - git remote add github git@github.com:askanna-io/backup-helper.git
-    - git push gitlab $TARGET
-    - git push github $TARGET
+    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - git fetch origin
+    - git checkout -B ${CI_COMMIT_BRANCH:-${CI_COMMIT_TAG}}
+    - git push public $TARGET
+  after_script:
+    - rm -f ~/.ssh/known_hosts
+    - git remote remove public
+    - eval $(ssh-agent -s)
+    - ssh-add -D
+
+publish_to_gitlab:  
+  extends: .publish_to_public_repos
+  variables:
+    SSH_PRIVATE_KEY: $SSH_PRIVATE_KEY_GITLAB_COM
+    PUBLIC_REPO: git@gitlab.com:askanna/backup-helper.git
+  
+publish_to_github:
+  extends: .publish_to_public_repos
+  variables:
+    SSH_PRIVATE_KEY: $SSH_PRIVATE_KEY_GITHUB_COM
+    PUBLIC_REPO: git@github.com:askanna-io/backup-helper.git
