@@ -17,13 +17,31 @@ stages:
 build_image:
   stage: build    
   <<: *variables
-  image:
-    name: gcr.io/kaniko-project/executor:debug
-    entrypoint: [""]
-  script:
+  image: docker:28
+  services:
+    - docker:28-dind
+  variables:
+    DOCKER_TLS_CERTDIR: ""
+    DOCKER_BUILDKIT: "1"
+    DOCKER_HOST: tcp://docker:2375
+  cache:
+    paths:
+      - .docker-cache
+  before_script:
+    - echo "$CI_REGISTRY_PASSWORD" | docker login $CI_REGISTRY --username $CI_REGISTRY_USER --password-stdin
     - echo "Building image to" $DOCKER_IMAGE
-    - echo "{\"auths\":{\"$CI_REGISTRY\":{\"username\":\"$CI_REGISTRY_USER\",\"password\":\"$CI_REGISTRY_PASSWORD\"}}}" > /kaniko/.docker/config.json
-    - /kaniko/executor --context $CI_PROJECT_DIR --dockerfile $CI_PROJECT_DIR/Dockerfile --destination $DOCKER_IMAGE 
+    - docker buildx create --use --driver docker-container
+  script: |
+    docker buildx build \
+      --platform linux/amd64,linux/arm64 \
+      --tag $DOCKER_IMAGE \
+      --cache-from type=local,src=.docker-cache \
+      --cache-to type=local,dest=.docker-cache \
+      --pull \
+      --push \
+      .
+  after_script:
+    - docker logout $CI_REGISTRY
 
 verify_image:
   stage: build
