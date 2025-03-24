@@ -41,6 +41,7 @@ build_image:
       --pull \
       --provenance=false \
       --push \
+      --file docker/Dockerfile \
       .
   after_script:
     - docker logout $CI_REGISTRY
