@@ -31,3 +31,8 @@ RUN chmod +x /usr/local/bin/backup_scripts/* \
 COPY cron/crontab /etc/cron.d/crontab
 RUN chmod +x /etc/cron.d/crontab \
     && crontab /etc/cron.d/crontab
+
+COPY docker/entrypoint.sh /entrypoint
+RUN chmod +x /entrypoint
+
+ENTRYPOINT ["/entrypoint"]
