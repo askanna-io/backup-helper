@@ -12,6 +12,8 @@ RUN apt update && apt install --no-install-recommends --assume-yes \
         postgresql-client \
         cron \
         gcc \
+        python3-dev \
+        python3-setuptools \
     && pip install --no-cache-dir --upgrade crcmod \
     && curl -qLs https://storage.googleapis.com/pub/gsutil.tar.gz | tar -C /opt -zxf - \
     && ln -s /opt/gsutil/gsutil /usr/local/bin/gsutil \
