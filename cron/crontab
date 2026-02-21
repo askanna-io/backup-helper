@@ -1,7 +1,5 @@
-# CRON SETTINGS
-PATH=/usr/local/bin:/usr/bin:/bin
-SHELL=/bin/bash
+# Supercronic crontab - runs as non-root user
+# Environment variables are inherited from the container
 CRON_TZ=Europe/Amsterdam
 
-# CRONJOBS
-15 2 * * * source /etc/environment_container && full_backup_procedure > /proc/1/fd/1 2>/proc/1/fd/2
+15 2 * * * source ${HOME}/.backup_env && full_backup_procedure

@@ -16,7 +16,7 @@ source "${working_dir}/_sourced/make_boto_config.sh"
 
 message_welcome "The following backups are on the Google Bucket '${GCS_BUCKET}':"
 
-if [[ ! "${GCS_BUCKET}" =~ gs://* ]]; then
+if [[ ! "${GCS_BUCKET}" =~ ^gs:// ]]; then
     GCS_BUCKET="gs://${GCS_BUCKET}"
 fi
 

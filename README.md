@@ -16,14 +16,21 @@ A list of commands that you can run with this container:
 - `gcs_download`: download a backup file from Google Cloud Storage
 - `gcs_ls`: list backup files present in Google Cloud Storage
 
+Run the container without a command to see the available commands:
+
+```shell
+docker run --rm registry.gitlab.com/askanna/backup-helper:latest
+```
+
 In the rest of this README, you can find more information about how to run and configure these commands.
 
 ## Docker image
 
-The Docker image of the Backup Helper is available on [Docker Hub](https://hub.docker.com/r/askanna/backup-helper):
+The Docker image of the Backup Helper is available on
+[GitLab Container Registry](https://gitlab.com/askanna/backup-helper/container_registry):
 
 ```shell
-docker pull askanna/backup-helper
+docker pull registry.gitlab.com/askanna/backup-helper:latest
 ```
 
 ## Configuration
@@ -69,21 +76,40 @@ To use the Google Cloud Storage features, you need to have a Google service acco
 To authenticate, you need to have the associated private JSON key of the service account or
 [create a new service account JSON key](https://cloud.google.com/iam/docs/creating-managing-service-account-keys).
 
+## Container user
+
+The container runs as a non-root `app` user with UID 1000 and GID 1000. If you share volumes between the Backup
+Helper and other containers (e.g. a Django application), make sure those containers use the same UID/GID so that
+file permissions are consistent.
+
+The GCS key file must be readable by the `app` user. When mounting it as a bind mount, set the group to GID 1000
+and permissions to 640 on the host:
+
+```shell
+chown <owner>:1000 /path/to/gcs-key.json
+chmod 640 /path/to/gcs-key.json
+```
+
 ## Daily backup
 
-When you start the image, the daily backup is not scheduled because the cron daemon is not started by default. When
-you run the image with the command `cron -f` it will start the cron daemon and schedule the daily backup. See also
-['How we use it'](#how-we-use-it).
+When you start the container without a command, it shows the available commands. To schedule a daily backup, start
+the container with `supercronic`:
+
+```shell
+command: supercronic /etc/supercronic-crontab
+```
+
+See also ['How we use it'](#how-we-use-it).
 
 ## How we use it
 
 We use the Backup Helper for the AskAnna project that we run as a Docker Stack. In our
-[Docker Compose](https://docs.docker.com/compose/) file we have a service named `backup-helper`:
+[Docker Compose](https://docs.docker.com/compose/) file we have a service named `backup_helper`:
 
-```docker
+```yaml
 backup_helper:
-  image: askanna/backup-helper
-  command: cron -f
+  image: registry.gitlab.com/askanna/backup-helper:latest
+  command: supercronic /etc/supercronic-crontab
   volumes:
     - backup_volume:/backups
     - storage_volume:/data
@@ -91,20 +117,20 @@ backup_helper:
   env_file:
     - ./postgres.env
   environment:
-      GCS_BUCKET: <Google Cloud Storage Bucket name>
+    GCS_BUCKET: <Google Cloud Storage Bucket name>
 ```
 
 With the Backup Helper available as a service in the Docker Stack, we can perform backup tasks. Depending on the
 backup task, we run one or multiple of the commands below.
 
-> If you don't want to schedule a daily backup, remove the line `command: cron -f`.
+> If you don't want to schedule a daily backup, remove the `command` line.
 
 ## Make backup
 
 ### Full backup procedure
 
 ```shell
-docker-compose run --rm backup_helper full_backup_procedure
+docker compose run --rm backup_helper full_backup_procedure
 ```
 
 This command actually runs the following commands:
@@ -120,19 +146,19 @@ The full backup procedure is also the command used for the daily backup.
 ### Backup PostgreSQL
 
 ```shell
-docker-compose run --rm backup_helper backup_postgres
+docker compose run --rm backup_helper backup_postgres
 ```
 
 ### Backup files
 
 ```shell
-docker-compose run --rm backup_helper backup_files
+docker compose run --rm backup_helper backup_files
 ```
 
 ## List backups
 
 ```shell
-docker-compose run --rm backup_helper backup_ls
+docker compose run --rm backup_helper backup_ls
 ```
 
 ## Restore backup
@@ -140,19 +166,19 @@ docker-compose run --rm backup_helper backup_ls
 ### Restore PostgreSQL
 
 ```shell
-docker-compose run --rm backup_helper restore_postgres <backup file>
+docker compose run --rm backup_helper restore_postgres <backup file>
 ```
 
 ### Restore files
 
 ```shell
-docker-compose run --rm backup_helper restore_files <backup file>
+docker compose run --rm backup_helper restore_files <backup file>
 ```
 
 ## Clean backups
 
 ```shell
-docker-compose run --rm backup_helper backup_clean
+docker compose run --rm backup_helper backup_clean
 ```
 
 ## Google Cloud Storage
@@ -160,19 +186,19 @@ docker-compose run --rm backup_helper backup_clean
 ### Upload backup
 
 ```shell
-docker-compose run --rm backup_helper gcs_upload
+docker compose run --rm backup_helper gcs_upload
 ```
 
 ### Download backup
 
 ```shell
-docker-compose run --rm backup_helper gcs_download <backup file>
+docker compose run --rm backup_helper gcs_download <backup file>
 ```
 
 ### List backups on GCS
 
 ```shell
-docker-compose run --rm backup_helper gcs_ls
+docker compose run --rm backup_helper gcs_ls
 ```
 
 ## Credits

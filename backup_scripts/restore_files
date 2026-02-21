@@ -22,7 +22,14 @@ if [[ -z ${1+x} ]]; then
 fi
 
 backup_filename="${1}"
-backup_file_path="${BACKUP_DIR}/${1}"
+
+# Prevent path traversal attacks
+if [[ "${backup_filename}" == *..* ]] || [[ "${backup_filename}" == /* ]]; then
+    message_error "Invalid filename '${backup_filename}'. Path traversal is not allowed."
+    exit 1
+fi
+
+backup_file_path="${BACKUP_DIR}/${backup_filename}"
 if [[ ! -f "${backup_file_path}" ]]; then
     message_error "No backup with the specified filename '${backup_filename}' found. To see a list of available runs on the backup volume, run: 'backup_helper ls'"
     exit 1
@@ -36,9 +43,9 @@ if [[ ! -d "${BACKUP_TARGET}" ]]; then
 fi
 
 if [ "$BACKUP_ZIP_FILES" = true ] ; then
-    tar --extract --gzip --file="${backup_file_path}" --directory="${BACKUP_TARGET}"
+    tar --extract --gzip --no-same-owner --file="${backup_file_path}" --directory="${BACKUP_TARGET}"
 else
-    tar --extract --file="${backup_file_path}" --directory="${BACKUP_TARGET}"
+    tar --extract --no-same-owner --file="${backup_file_path}" --directory="${BACKUP_TARGET}"
 fi
 
 message_success "The files have been restored from the '${backup_filename}' backup into the directory '${BACKUP_TARGET}'."

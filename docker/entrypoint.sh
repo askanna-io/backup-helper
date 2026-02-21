@@ -1,9 +1,19 @@
 #!/bin/bash
 
-ENV_FILE="/etc/environment_container"
+set -o errexit
+set -o pipefail
+set -o nounset
 
-# Collect all environment variables needed for a full backup procedure and make sure they can be sourced
-env | grep -E "^(GCS_|POSTGRES_|BACKUP_)" > "$ENV_FILE"
+ENV_FILE="${HOME}/.backup_env"
+
+# Collect environment variables needed for backup procedures
+# File is stored in user home dir with restricted permissions
+env | grep -E "^(GCS_|POSTGRES_|BACKUP_)" > "$ENV_FILE" || true
 sed -i "s/^/export /" "$ENV_FILE"
+chmod 600 "$ENV_FILE"
+
+if [ $# -eq 0 ]; then
+    exec backup_help
+fi
 
 exec "$@"

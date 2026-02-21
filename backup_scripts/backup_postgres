@@ -32,7 +32,7 @@ if [[ -n "$POSTGRES_DATABASES" ]]; then
         message_info "Backing up database '${database}'..."
 
         backup_filename="${BACKUP_FILE_PREFIX}_postgres_${database}_$(date +'%Y_%m_%dT%H_%M_%S').sql.gz"
-        pg_dump -v ${database} | gzip > "${BACKUP_DIR}/${backup_filename}"
+        pg_dump -v "${database}" | gzip > "${BACKUP_DIR}/${backup_filename}"
 
         message_info "Database '${database}' backed up to '${backup_filename}'"
         message_newline
@@ -43,7 +43,7 @@ else
     message_welcome "Backing up database '${POSTGRES_DB}'..."
 
     backup_filename="${BACKUP_FILE_PREFIX}_postgres_$(date +'%Y_%m_%dT%H_%M_%S').sql.gz"
-    pg_dump | gzip >"${BACKUP_DIR}/${backup_filename}"
+    pg_dump | gzip > "${BACKUP_DIR}/${backup_filename}"
 
     message_success "Database '${POSTGRES_DB}' backed up to '${backup_filename}' in '${BACKUP_DIR}'."
 fi

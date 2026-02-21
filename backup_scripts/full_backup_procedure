@@ -4,12 +4,23 @@ set -o errexit
 set -o pipefail
 set -o nounset
 
+trap 'echo -e "\nERROR: Full backup procedure failed at step: ${CURRENT_STEP:-unknown}" >&2; exit 1' ERR
+
 echo -e "Starting full backup procedure\n"
 
+CURRENT_STEP="upload existing backups to GCS"
 gcs_upload
+
+CURRENT_STEP="clean old backups"
 backup_clean
+
+CURRENT_STEP="backup PostgreSQL"
 backup_postgres
+
+CURRENT_STEP="backup files"
 backup_files
+
+CURRENT_STEP="upload new backups to GCS"
 gcs_upload
 
 echo -e "\nFinished full backup procedure"

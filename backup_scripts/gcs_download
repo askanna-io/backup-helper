@@ -19,9 +19,15 @@ source "${working_dir}/_sourced/make_boto_config.sh"
 
 backup_filename="${1}"
 
+# Prevent path traversal attacks
+if [[ "${backup_filename}" == *..* ]] || [[ "${backup_filename}" == /* ]]; then
+    message_error "Invalid filename '${backup_filename}'. Path traversal is not allowed."
+    exit 1
+fi
+
 message_welcome "Download the file '${backup_filename}' from GCS Bucket '${GCS_BUCKET}'..."
 
-if [[ ! "$GCS_BUCKET" =~ gs://* ]]; then
+if [[ ! "${GCS_BUCKET}" =~ ^gs:// ]]; then
     GCS_BUCKET="gs://${GCS_BUCKET}"
 fi
 

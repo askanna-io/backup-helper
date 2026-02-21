@@ -21,12 +21,14 @@ fi
 message_newline
 
 tmp_file=$(mktemp -t find.XXXXXX)
+trap 'rm -f "$tmp_file"' EXIT
+
 if [[ "${BACKUP_KEEP_DAYS}" == "NONE" ]]; then
    find "${BACKUP_DIR}" -type f >> "${tmp_file}"
 else
    find "${BACKUP_DIR}" -type f -mtime +"${BACKUP_KEEP_DAYS}" >> "${tmp_file}"
 fi
-count_files=$(wc -l "${tmp_file}" | awk '{ print $1 }')
+count_files=$(wc -l < "${tmp_file}")
 
 if [ "${count_files}" -eq 0 ]; then
    if [[ "${BACKUP_KEEP_DAYS}" == "NONE" ]]; then
@@ -49,5 +51,3 @@ else
       message_success "The backup files older than ${BACKUP_KEEP_DAYS} days in directory '${BACKUP_DIR}' are removed."
    fi
 fi
-
-rm "${tmp_file}"
