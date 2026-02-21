@@ -15,7 +15,7 @@ stages:
         DOCKER_IMAGE: $CI_REGISTRY_IMAGE/review:$CI_COMMIT_REF_SLUG
 
 build_image:
-  stage: build    
+  stage: build
   <<: *variables
   image: docker:28
   services:
@@ -49,7 +49,7 @@ build_image:
 verify_image:
   stage: build
   needs:
-    - job: build_image      
+    - job: build_image
   <<: *variables
   image: $DOCKER_IMAGE
   script:
@@ -58,7 +58,7 @@ verify_image:
     - tar --version
     - gsutil version
 
-.publish_to_public_repos:
+publish_to_github:
   stage: publish
   needs: []
   allow_failure: true
@@ -80,32 +80,19 @@ verify_image:
     - eval $(ssh-agent -s)
     - mkdir -p ~/.ssh
     - chmod 700 ~/.ssh
-    - ssh-keyscan gitlab.com >> ~/.ssh/known_hosts
     - ssh-keyscan github.com >> ~/.ssh/known_hosts
     - chmod 644 ~/.ssh/known_hosts
     - git config --global user.email "hello@askanna.io"
     - git config --global user.name "AskAnna Robot"
-    - git remote remove public || true
-    - git remote add public $PUBLIC_REPO
+    - git remote remove github || true
+    - git remote add github git@github.com:askanna-io/backup-helper.git
   script:
-    - echo "$SSH_PRIVATE_KEY" | tr -d '\r' | ssh-add - > /dev/null
+    - echo "$SSH_PRIVATE_KEY_GITHUB_COM" | tr -d '\r' | ssh-add - > /dev/null
     - git fetch origin
     - git checkout -B ${CI_COMMIT_BRANCH:-${CI_COMMIT_TAG}}
-    - git push public $TARGET
+    - git push github $TARGET
   after_script:
     - rm -f ~/.ssh/known_hosts
-    - git remote remove public
+    - git remote remove github
     - eval $(ssh-agent -s)
     - ssh-add -D
-
-publish_to_gitlab:  
-  extends: .publish_to_public_repos
-  variables:
-    SSH_PRIVATE_KEY: $SSH_PRIVATE_KEY_GITLAB_COM
-    PUBLIC_REPO: git@gitlab.com:askanna/backup-helper.git
-  
-publish_to_github:
-  extends: .publish_to_public_repos
-  variables:
-    SSH_PRIVATE_KEY: $SSH_PRIVATE_KEY_GITHUB_COM
-    PUBLIC_REPO: git@github.com:askanna-io/backup-helper.git
