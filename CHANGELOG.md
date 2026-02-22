@@ -2,6 +2,10 @@
 
 ## Unreleased
 
+## 2.0.2
+
+- Add major and minor version Docker tags (e.g. `2` and `2.0`) for easier production deployments
+
 ## 2.0.1
 
 - Update Docker image from 28 to 29 (cli + dind) in CI pipeline

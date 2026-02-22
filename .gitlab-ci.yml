@@ -42,9 +42,15 @@ build_image:
     - echo "Building image to" $DOCKER_IMAGE
     - docker buildx create --use --driver docker-container
   script: |
+    EXTRA_TAGS=""
+    if [ -n "$CI_COMMIT_TAG" ]; then
+      EXTRA_TAGS="--tag $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG%%.*} --tag $CI_REGISTRY_IMAGE:${CI_COMMIT_TAG%.*}"
+    fi
+
     docker buildx build \
       --platform linux/amd64,linux/arm64 \
       --tag $DOCKER_IMAGE \
+      $EXTRA_TAGS \
       --cache-from type=registry,ref=$CI_REGISTRY_IMAGE/cache:buildcache \
       --cache-to type=registry,ref=$CI_REGISTRY_IMAGE/cache:buildcache,mode=max \
       --pull \
