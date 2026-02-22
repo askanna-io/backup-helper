@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Pin Python Docker image to 3.13.x in Renovate config
+
 ## 2.0.0
 
 - Switch container user from `root` to `app` (UID 1000, GID 1000)

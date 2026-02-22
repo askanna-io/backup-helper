@@ -3,5 +3,11 @@
   "extends": ["config:recommended"],
   "pip_requirements": {
     "fileMatch": ["docker/requirements\\.txt$"]
-  }
+  },
+  "packageRules": [
+    {
+      "matchPackageNames": ["docker.io/python"],
+      "allowedVersions": ">=3.13, <3.14"
+    }
+  ]
 }
