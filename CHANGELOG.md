@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.0.1
+
 - Update Docker image from 28 to 29 (cli + dind) in CI pipeline
 - Pin Python Docker image to 3.13.x in Renovate config
 
