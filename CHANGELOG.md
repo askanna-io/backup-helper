@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.0.0
+
 - Switch container user from `root` to `app` (UID 1000, GID 1000)
 - Show available commands when container starts without arguments
 - Switch base image from Python 3.12 to 3.13
@@ -15,7 +17,7 @@
 - Add error tracing with step tracking in `full_backup_procedure`
 - Use trap for temp file cleanup in `backup_clean`
 - Add `backup_help` command for use while container is running
-- Add `--no-same-owner` to tar restore for non-root compatibiliteit
+- Add `--no-same-owner` to tar restore for non-root compatibility
 - Switch Docker build cache from local to registry-based
 - Add scheduled no-cache Docker builds (weekly, Sunday)
 - Use lighter `docker:28-cli` image for build job
