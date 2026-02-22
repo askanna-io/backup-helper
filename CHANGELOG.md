@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Fix Renovate `allowedVersions` syntax for Docker versioning
+
 ## 2.0.2
 
 - Add major and minor version Docker tags (e.g. `2` and `2.0`) for easier production deployments
