@@ -1,5 +1,5 @@
 ---
-name: release
+name: create-release
 description: Use when creating a new release, tagging a version, or preparing release notes for this project
 ---
 
