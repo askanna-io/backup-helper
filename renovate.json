@@ -1,12 +1,18 @@
 {
   "$schema": "https://docs.renovatebot.com/renovate-schema.json",
-  "extends": ["config:recommended"],
+  "extends": [
+    "config:recommended"
+  ],
   "pip_requirements": {
-    "fileMatch": ["docker/requirements\\.txt$"]
+    "managerFilePatterns": [
+      "/docker/requirements\\.txt$/"
+    ]
   },
   "packageRules": [
     {
-      "matchPackageNames": ["docker.io/python"],
+      "matchPackageNames": [
+        "docker.io/python"
+      ],
       "allowedVersions": "/^3\\.13/"
     }
   ]

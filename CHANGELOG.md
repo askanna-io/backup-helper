@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Migrate Renovate config to use `managerFilePatterns` instead of deprecated `fileMatch`
 - Fix Renovate `allowedVersions` syntax for Docker versioning
 
 ## 2.0.2
