@@ -31,9 +31,9 @@ build_image:
   stage: build
   interruptible: true
   <<: *variables
-  image: docker:28-cli
+  image: docker:29-cli
   services:
-    - docker:28-dind
+    - docker:29-dind
   variables:
     DOCKER_HOST: tcp://docker:2375
     DOCKER_TLS_CERTDIR: ""
