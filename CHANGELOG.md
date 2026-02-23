@@ -2,6 +2,7 @@
 
 ## Unreleased
 
+- Use pipeline variables (`UPDATE_CACHE`, `RENOVATE`) instead of schedule-based CI rules
 - Add `customManagers:dockerfileVersions` preset to fix Renovate tracking of supercronic version
 - Add script, crontab and user checks to `verify_image` CI job
 

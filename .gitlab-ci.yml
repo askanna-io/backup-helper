@@ -13,10 +13,12 @@ stages:
 
 .variables: &variables
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule" && $CI_COMMIT_BRANCH == "main"'
+    - if: $UPDATE_CACHE
       variables:
         DOCKER_IMAGE: $CI_REGISTRY_IMAGE:latest
         DOCKER_NO_CACHE: "--no-cache"
+    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+      when: never
     - if: '$CI_COMMIT_BRANCH == "main"'
       variables:
         DOCKER_IMAGE: $CI_REGISTRY_IMAGE:latest
@@ -164,4 +166,4 @@ renovate:
   script:
     - renovate $CI_PROJECT_PATH
   rules:
-    - if: '$CI_PIPELINE_SOURCE == "schedule"'
+    - if: $RENOVATE
