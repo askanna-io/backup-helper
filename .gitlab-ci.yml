@@ -163,6 +163,7 @@ renovate:
     RENOVATE_ENDPOINT: ${CI_API_V4_URL}
     RENOVATE_TOKEN: ${RENOVATE_TOKEN}
     RENOVATE_GIT_AUTHOR: "Renovate Bot <renovate@askanna.io>"
+    GITHUB_COM_TOKEN: ${GITHUB_COM_TOKEN}
   script:
     - renovate $CI_PROJECT_PATH
   rules:
