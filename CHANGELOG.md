@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 2.0.3
+
 - Remove `.backup_env` workaround; supercronic inherits environment from the container
 - Migrate Renovate config to use `managerFilePatterns` instead of deprecated `fileMatch`
 - Fix Renovate `allowedVersions` syntax for Docker versioning
