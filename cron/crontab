@@ -2,4 +2,4 @@
 # Environment variables are inherited from the container
 CRON_TZ=Europe/Amsterdam
 
-15 2 * * * source ${HOME}/.backup_env && full_backup_procedure
+15 2 * * * full_backup_procedure
