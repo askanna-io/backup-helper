@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+- Add script, crontab and user checks to `verify_image` CI job
+
 ## 2.0.3
 
 - Remove `.backup_env` workaround; supercronic inherits environment from the container

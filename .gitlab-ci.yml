@@ -74,6 +74,23 @@ verify_image:
     - pg_dump --version
     - tar --version
     - gsutil version
+    - supercronic -test /etc/supercronic-crontab
+    - command -v backup_clean
+    - command -v backup_files
+    - command -v backup_help
+    - command -v backup_ls
+    - command -v backup_postgres
+    - command -v full_backup_procedure
+    - command -v gcs_download
+    - command -v gcs_ls
+    - command -v gcs_upload
+    - command -v restore_files
+    - command -v restore_postgres
+    - backup_help | grep "AskAnna Backup Helper"
+    - 'printf "user: %s\nuid:  %s\ngid:  %s\n" "$(whoami)" "$(id -u)" "$(id -g)"'
+    - test "$(whoami)" = "app"
+    - test "$(id -u)" = "1000"
+    - test "$(id -g)" = "1000"
 
 publish_to_github:
   stage: publish
