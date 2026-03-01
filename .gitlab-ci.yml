@@ -157,7 +157,7 @@ create_release:
 renovate:
   stage: maintenance
   needs: []
-  image: renovate/renovate:43.31
+  image: renovate/renovate:43.46
   variables:
     RENOVATE_PLATFORM: gitlab
     RENOVATE_ENDPOINT: ${CI_API_V4_URL}
