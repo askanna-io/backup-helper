@@ -8,6 +8,7 @@
 - Pin Renovate image to a specific version so Renovate tracks its own updates
 - Pass a GitHub token to the Renovate job so it can look up `github-releases` datasources
 - Update Renovate image to v43.204
+- Update supercronic to v0.2.46
 
 ## 2.0.3
 
