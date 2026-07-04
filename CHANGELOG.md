@@ -2,12 +2,14 @@
 
 ## Unreleased
 
+## 2.0.4
+
 - Use pipeline variables (`UPDATE_CACHE`, `RENOVATE`) instead of schedule-based CI rules
 - Add `customManagers:dockerfileVersions` preset to fix Renovate tracking of supercronic version
 - Add script, crontab and user checks to `verify_image` CI job
 - Pin Renovate image to a specific version so Renovate tracks its own updates
 - Pass a GitHub token to the Renovate job so it can look up `github-releases` datasources
-- Update Renovate image to v43.204
+- Update Renovate image to v43.251
 - Update supercronic to v0.2.47
 
 ## 2.0.3
