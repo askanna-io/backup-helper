@@ -40,6 +40,11 @@ RUN apt-get update && apt-get install --no-install-recommends --assume-yes \
     && apt-get purge --assume-yes --auto-remove --option APT::AutoRemove::RecommendsImportant=false \
     && rm -rf /var/lib/apt/lists/*
 
+# GCS buckets with uniform bucket-level access reject per-object ACLs, so do
+# not send them (gsutil did the same). Set RCLONE_GCS_BUCKET_POLICY_ONLY=false
+# if you need rclone to set per-object ACLs on a fine-grained-access bucket.
+ENV RCLONE_GCS_BUCKET_POLICY_ONLY=true
+
 RUN addgroup --gid 1000 app \
     && adduser --uid 1000 --ingroup app --disabled-password --gecos "" --home /home/app app \
     && mkdir -p /backups /data /home/app/.config/rclone \

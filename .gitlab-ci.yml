@@ -99,6 +99,7 @@ verify_image:
     - command -v restore_postgres
     - backup_help | grep "AskAnna Backup Helper"
     - test "$REMOTE_URL" = ":gcs:verify-bucket"
+    - test "$RCLONE_GCS_BUCKET_POLICY_ONLY" = "true"
     - 'printf "user: %s\nuid:  %s\ngid:  %s\n" "$(whoami)" "$(id -u)" "$(id -g)"'
     - test "$(whoami)" = "app"
     - test "$(id -u)" = "1000"

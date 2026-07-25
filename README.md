@@ -94,6 +94,11 @@ To use the Google Cloud Storage features, you need to have a Google service acco
 To authenticate, you need to have the associated private JSON key of the service account or
 [create a new service account JSON key](https://cloud.google.com/iam/docs/creating-managing-service-account-keys).
 
+The image sets `RCLONE_GCS_BUCKET_POLICY_ONLY=true` by default, so uploads also work on buckets with
+[uniform bucket-level access](https://cloud.google.com/storage/docs/uniform-bucket-level-access) enabled
+(rclone would otherwise send a per-object ACL, which such buckets reject). Set this variable to `false` if
+you need rclone to set per-object ACLs on a bucket with fine-grained access.
+
 #### Amazon S3 (and S3-compatible providers)
 
 ```yaml
