@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.0.1
+
 - Fix uploads to GCS buckets with uniform bucket-level access: rclone sent a per-object ACL by default, which
   such buckets reject with `Error 400: Cannot insert legacy ACL`. The image now sets
   `RCLONE_GCS_BUCKET_POLICY_ONLY=true` so no per-object ACLs are sent, matching gsutil's behaviour in v2
