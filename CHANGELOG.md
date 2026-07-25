@@ -2,6 +2,8 @@
 
 ## Unreleased
 
+## 3.0.0
+
 - Replace gsutil with rclone for remote storage operations. Google will no longer include gsutil in the default
   Google Cloud CLI installation package per March 2027, and rclone adds support for
   [70+ storage backends](https://rclone.org/overview/) such as Google Cloud Storage, Amazon S3, Azure Blob Storage
