@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+- Update supercronic to v0.2.48
+- Fix supercronic SHA256 checksums not being updated on version bumps: Renovate now
+  tracks the version and per-arch checksums together via a custom manager using the
+  `github-release-attachments` datasource
+
 ## 2.0.4
 
 - Use pipeline variables (`UPDATE_CACHE`, `RENOVATE`) instead of schedule-based CI rules

@@ -24,7 +24,7 @@ Docker-based tool for PostgreSQL backups and Google Cloud Storage sync. Used in 
 - Multi-arch: linux/amd64 + linux/arm64
 - Build context is project root: `docker buildx build --file docker/Dockerfile .`
 - Python deps in `docker/requirements.txt` (tracked by Renovate)
-- Supercronic version tracked by Renovate via datasource comment in Dockerfile
+- Supercronic version + SHA256 checksums tracked together by a Renovate custom manager (`github-release-attachments` datasource) in renovate.json
 
 ## CI/CD (GitLab)
 

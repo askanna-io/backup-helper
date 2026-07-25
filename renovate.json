@@ -9,6 +9,22 @@
       "/docker/requirements\\.txt$/"
     ]
   },
+  "customManagers": [
+    {
+      "customType": "regex",
+      "description": "Update supercronic version and per-arch SHA256 checksums together",
+      "managerFilePatterns": [
+        "/docker/Dockerfile$/"
+      ],
+      "matchStrings": [
+        "ARG SUPERCRONIC_VERSION=(?<currentValue>v?\\d+\\.\\d+\\.\\d+)[\\s\\S]*?ARG SUPERCRONIC_SHA256_AMD64=(?<currentDigest>[a-f0-9]{64})",
+        "ARG SUPERCRONIC_VERSION=(?<currentValue>v?\\d+\\.\\d+\\.\\d+)[\\s\\S]*?ARG SUPERCRONIC_SHA256_ARM64=(?<currentDigest>[a-f0-9]{64})"
+      ],
+      "depNameTemplate": "aptible/supercronic",
+      "datasourceTemplate": "github-release-attachments",
+      "versioningTemplate": "semver-coerced"
+    }
+  ],
   "packageRules": [
     {
       "matchPackageNames": [
