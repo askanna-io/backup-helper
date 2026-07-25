@@ -8,8 +8,8 @@ trap 'echo -e "\nERROR: Full backup procedure failed at step: ${CURRENT_STEP:-un
 
 echo -e "Starting full backup procedure\n"
 
-CURRENT_STEP="upload existing backups to GCS"
-gcs_upload
+CURRENT_STEP="upload existing backups to remote storage"
+remote_upload
 
 CURRENT_STEP="clean old backups"
 backup_clean
@@ -20,7 +20,7 @@ backup_postgres
 CURRENT_STEP="backup files"
 backup_files
 
-CURRENT_STEP="upload new backups to GCS"
-gcs_upload
+CURRENT_STEP="upload new backups to remote storage"
+remote_upload
 
 echo -e "\nFinished full backup procedure"

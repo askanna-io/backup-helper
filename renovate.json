@@ -4,11 +4,6 @@
     "config:recommended",
     "customManagers:dockerfileVersions"
   ],
-  "pip_requirements": {
-    "managerFilePatterns": [
-      "/docker/requirements\\.txt$/"
-    ]
-  },
   "customManagers": [
     {
       "customType": "regex",
@@ -28,9 +23,9 @@
   "packageRules": [
     {
       "matchPackageNames": [
-        "docker.io/python"
+        "docker.io/debian"
       ],
-      "allowedVersions": "/^3\\.13/"
+      "allowedVersions": "/^bookworm/"
     }
   ]
 }

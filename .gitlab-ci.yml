@@ -71,11 +71,13 @@ verify_image:
     - job: build_image
   <<: *variables
   image: $DOCKER_IMAGE
+  variables:
+    GCS_BUCKET: gs://verify-bucket
   script:
     - echo "Using Docker image" $DOCKER_IMAGE
     - pg_dump --version
     - tar --version
-    - gsutil version
+    - rclone version
     - supercronic -test /etc/supercronic-crontab
     - command -v backup_clean
     - command -v backup_files
@@ -86,9 +88,13 @@ verify_image:
     - command -v gcs_download
     - command -v gcs_ls
     - command -v gcs_upload
+    - command -v remote_download
+    - command -v remote_ls
+    - command -v remote_upload
     - command -v restore_files
     - command -v restore_postgres
     - backup_help | grep "AskAnna Backup Helper"
+    - test "$REMOTE_URL" = ":gcs:verify-bucket"
     - 'printf "user: %s\nuid:  %s\ngid:  %s\n" "$(whoami)" "$(id -u)" "$(id -g)"'
     - test "$(whoami)" = "app"
     - test "$(id -u)" = "1000"

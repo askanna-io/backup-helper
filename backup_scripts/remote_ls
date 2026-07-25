@@ -1,0 +1,27 @@
+#!/usr/bin/env bash
+
+### List backups on a remote storage
+###
+### Usage:
+###     $ docker-compose -f <environment>.yml (exec |run --rm) backup_helper remote_ls
+
+set -o errexit
+set -o pipefail
+set -o nounset
+
+working_dir="$(dirname "${0}")"
+source "${working_dir}/_sourced/constants.sh"
+source "${working_dir}/_sourced/messages.sh"
+
+if [[ "$(basename "${0}")" == gcs_* ]]; then
+    message_warning "'$(basename "${0}")' is deprecated. Use 'remote_ls' instead."
+fi
+
+if [[ -z "${REMOTE_URL}" ]]; then
+    message_error "No remote storage configured. Set 'REMOTE_URL' to list backups on a remote storage."
+    exit 1
+fi
+
+message_welcome "The following backups are on the remote '${REMOTE_URL}':"
+
+rclone lsl "${REMOTE_URL}"

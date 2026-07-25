@@ -1,2 +1,0 @@
-crcmod>=1.7
-gsutil>=5.35

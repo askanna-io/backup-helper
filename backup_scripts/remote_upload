@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+### Upload backups to a remote storage
+###
+### Usage:
+###     $ docker-compose -f <environment>.yml (exec |run --rm) backup_helper remote_upload
+
+set -o errexit
+set -o pipefail
+set -o nounset
+shopt -s nullglob
+
+working_dir="$(dirname "${0}")"
+source "${working_dir}/_sourced/constants.sh"
+source "${working_dir}/_sourced/messages.sh"
+
+if [[ "$(basename "${0}")" == gcs_* ]]; then
+    message_warning "'$(basename "${0}")' is deprecated. Use 'remote_upload' instead."
+fi
+
+if [[ -z "${REMOTE_URL}" ]]; then
+    message_warning "No remote storage configured. Set 'REMOTE_URL' to enable uploads. Skipping upload."
+    exit 0
+fi
+
+message_welcome "Upload the files from directory '${BACKUP_DIR}' to remote '${REMOTE_URL}'..."
+
+files=("${BACKUP_DIR}"/*)
+if [ ${#files[@]} -gt 0 ]; then
+    rclone copy --ignore-existing "${BACKUP_DIR}" "${REMOTE_URL}"
+
+    message_success "The files from directory '${BACKUP_DIR}' have been uploaded to remote '${REMOTE_URL}'."
+else
+    message_info "Nothing to upload because there are no files in the directory '${BACKUP_DIR}'."
+fi

@@ -1,11 +1,11 @@
 # Backup Helper
 
-Docker-based tool for PostgreSQL backups and Google Cloud Storage sync. Used in AskAnna's Docker Stack.
+Docker-based tool for PostgreSQL backups and remote storage sync via rclone. Used in AskAnna's Docker Stack.
 
 ## Project structure
 
-- `backup_scripts/` - Shell scripts (backup, restore, GCS operations)
-- `docker/` - Dockerfile, entrypoint.sh, requirements.txt
+- `backup_scripts/` - Shell scripts (backup, restore, remote storage operations)
+- `docker/` - Dockerfile, entrypoint.sh
 - `cron/` - Crontab for scheduled backups via supercronic
 - `.gitlab-ci.yml` - CI/CD pipeline (build, verify, publish, release, renovate)
 - `renovate.json` - Automated dependency update tracking
@@ -20,11 +20,11 @@ Docker-based tool for PostgreSQL backups and Google Cloud Storage sync. Used in 
 
 ## Docker
 
-- Base image: `python:3.13-slim`
+- Base image: `debian:bookworm-slim` (digest pinned)
 - Multi-arch: linux/amd64 + linux/arm64
 - Build context is project root: `docker buildx build --file docker/Dockerfile .`
-- Python deps in `docker/requirements.txt` (tracked by Renovate)
 - Supercronic version + SHA256 checksums tracked together by a Renovate custom manager (`github-release-attachments` datasource) in renovate.json
+- rclone version tracked by Renovate via datasource comment in Dockerfile
 
 ## CI/CD (GitLab)
 
@@ -35,4 +35,4 @@ Docker-based tool for PostgreSQL backups and Google Cloud Storage sync. Used in 
 
 - Scripts in `backup_scripts/` have no `.sh` extension
 - Shared functions in `backup_scripts/_sourced/`
-- Scripts run as `backup` user inside the container
+- Scripts run as the `app` user (UID/GID 1000) inside the container

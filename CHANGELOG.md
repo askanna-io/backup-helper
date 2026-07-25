@@ -2,6 +2,23 @@
 
 ## Unreleased
 
+- Replace gsutil with rclone for remote storage operations. Google will no longer include gsutil in the default
+  Google Cloud CLI installation package per March 2027, and rclone adds support for
+  [70+ storage backends](https://rclone.org/overview/) such as Google Cloud Storage, Amazon S3, Azure Blob Storage
+  and SFTP
+- Add `REMOTE_URL` environment variable to configure the remote storage as an rclone connection string
+  (e.g. `:gcs:my-bucket`)
+- Rename `gcs_upload`, `gcs_download` and `gcs_ls` to `remote_upload`, `remote_download` and `remote_ls`; the
+  `gcs_*` commands remain available as deprecated aliases
+- Deprecate `GCS_BUCKET` and `GCS_KEY_FILE_PATH`; they keep working and are converted to `REMOTE_URL` and
+  `RCLONE_GCS_SERVICE_ACCOUNT_FILE`
+- Skip the upload with a warning instead of failing when no remote storage is configured
+- Switch base image from `python:3.13-slim` to `debian:bookworm-slim` with digest pinning, shrinking the image
+  by about 20% (arm64 unpacked: 342MB → 273MB)
+- Verify the rclone download against the `SHA256SUMS` file of the rclone release during the Docker build
+- Remove the boto config file generation and `docker/requirements.txt`
+- Track rclone releases with Renovate
+- Update the CI `verify_image` job to check rclone, the `remote_*` commands and the `GCS_BUCKET` conversion
 - Update supercronic to v0.2.48
 - Fix supercronic SHA256 checksums not being updated on version bumps: Renovate now
   tracks the version and per-arch checksums together via a custom manager using the

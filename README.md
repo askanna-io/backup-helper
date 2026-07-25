@@ -1,7 +1,9 @@
 # Backup Helper
 
 The Backup Helper aims to help you make and restore backups of your project files and PostgreSQL database.
-Also, you can upload and download backup files to Google Cloud Storage.
+Also, you can upload and download backup files to a remote storage. Remote storage support is powered by
+[rclone](https://rclone.org), so you can use Google Cloud Storage, Amazon S3, Azure Blob Storage, SFTP and
+[many other storage backends](https://rclone.org/overview/).
 
 A list of commands that you can run with this container:
 
@@ -12,9 +14,12 @@ A list of commands that you can run with this container:
 - `backup_clean`: remove local backup files
 - `restore_postgres`: restore a backup of a PostgreSQL database
 - `restore_files`: restore a backup of files and directories
-- `gcs_upload`: upload backup files to Google Cloud Storage
-- `gcs_download`: download a backup file from Google Cloud Storage
-- `gcs_ls`: list backup files present in Google Cloud Storage
+- `remote_upload`: upload backup files to a remote storage
+- `remote_download`: download a backup file from a remote storage
+- `remote_ls`: list backup files present on a remote storage
+
+The `gcs_upload`, `gcs_download` and `gcs_ls` commands from version 2.x are still available as deprecated
+aliases of the `remote_*` commands.
 
 Run the container without a command to see the available commands:
 
@@ -62,19 +67,79 @@ Via environment variables you can configure the Backup Helper.
 | `BACKUP_SOURCE`      | No       | `/data`            | The path of the directory with the files to backup           |
 | `BACKUP_TARGET`      | No       | `${BACKUP_SOURCE}` | The path of the directory where files should be restored to  |
 
-### Google Cloud Storage configuration
+### Remote storage configuration
 
 | Environment variable | Required | Default            | Description                                                  |
 | -------------------- | -------- | ------------------ | ------------------------------------------------------------ |
-| `GCS_BUCKET`         | No       |                    | The Google Cloud Storage Bucket you want to upload the backup files to or download them from<br>&nbsp;<br>This variable is required if you want to use the Backup Helper to upload files to or download from Google Cloud Storage. |
-| `GCS_KEY_FILE_PATH`      | No      | `/keys/gcs-key.json` | The path where the GCS service account key file will be mounted.<br>&nbsp;<br>This variable is required if you want to use the Backup Helper to upload files to or download from Google Cloud Storage. |
+| `REMOTE_URL`         | No       |                    | The remote storage location to upload backup files to or download them from, written as an rclone [connection string](https://rclone.org/docs/#connection-strings), e.g. `:gcs:my-bucket`, `:s3:my-bucket` or `:sftp:/backups`<br>&nbsp;<br>This variable is required if you want to use the Backup Helper to upload files to or download from a remote storage. |
 
-#### GCS service account key file
+The Backup Helper uses [rclone](https://rclone.org) for remote storage operations. Credentials and other
+backend options are configured with rclone environment variables in the format `RCLONE_<BACKEND>_<OPTION>`
+(see the [rclone documentation](https://rclone.org/docs/#environment-variables)). Below are examples for a few
+popular backends.
+
+Instead of environment variables, you can also mount an [rclone config file](https://rclone.org/docs/#config-config-file)
+at `/home/app/.config/rclone/rclone.conf` and set `REMOTE_URL` to a named remote like `my-remote:my-bucket`.
+
+#### Google Cloud Storage
+
+```yaml
+environment:
+  REMOTE_URL: ":gcs:my-bucket"
+  RCLONE_GCS_SERVICE_ACCOUNT_FILE: /keys/gcs-key.json
+```
 
 To use the Google Cloud Storage features, you need to have a Google service account or
 [create a new service account](https://cloud.google.com/iam/docs/creating-managing-service-accounts#creating_a_service_account).
 To authenticate, you need to have the associated private JSON key of the service account or
 [create a new service account JSON key](https://cloud.google.com/iam/docs/creating-managing-service-account-keys).
+
+#### Amazon S3 (and S3-compatible providers)
+
+```yaml
+environment:
+  REMOTE_URL: ":s3:my-bucket"
+  RCLONE_S3_PROVIDER: AWS
+  RCLONE_S3_REGION: eu-central-1
+  RCLONE_S3_ACCESS_KEY_ID: <access key id>
+  RCLONE_S3_SECRET_ACCESS_KEY: <secret access key>
+```
+
+#### Azure Blob Storage
+
+```yaml
+environment:
+  REMOTE_URL: ":azureblob:my-container"
+  RCLONE_AZUREBLOB_ACCOUNT: <storage account name>
+  RCLONE_AZUREBLOB_KEY: <storage account key>
+```
+
+#### SFTP
+
+```yaml
+environment:
+  REMOTE_URL: ":sftp:/backups"
+  RCLONE_SFTP_HOST: sftp.example.com
+  RCLONE_SFTP_USER: <user>
+  RCLONE_SFTP_PASS: <obscured password>
+```
+
+The SFTP password must be obscured with [rclone obscure](https://rclone.org/commands/rclone_obscure/):
+
+```shell
+docker compose run --rm backup_helper rclone obscure <password>
+```
+
+### Deprecated: Google Cloud Storage configuration
+
+The following environment variables are deprecated since version 3.0. They keep working: when set, they are
+automatically converted to the rclone equivalents. See also the
+[migration guide](#migrating-from-v2x-to-v30).
+
+| Environment variable | Required | Default            | Description                                                  |
+| -------------------- | -------- | ------------------ | ------------------------------------------------------------ |
+| `GCS_BUCKET`         | No       |                    | **Deprecated**, use `REMOTE_URL` instead. When set and `REMOTE_URL` is not set, it is converted to `REMOTE_URL=":gcs:<bucket>"`. |
+| `GCS_KEY_FILE_PATH`  | No       | `/keys/gcs-key.json` | **Deprecated**, use `RCLONE_GCS_SERVICE_ACCOUNT_FILE` instead. When the file exists, it is exported as `RCLONE_GCS_SERVICE_ACCOUNT_FILE`. |
 
 ## Container user
 
@@ -82,8 +147,9 @@ The container runs as a non-root `app` user with UID 1000 and GID 1000. If you s
 Helper and other containers (e.g. a Django application), make sure those containers use the same UID/GID so that
 file permissions are consistent.
 
-The GCS key file must be readable by the `app` user. When mounting it as a bind mount, set the group to GID 1000
-and permissions to 640 on the host:
+Key files that you mount into the container (e.g. a GCS service account key file) must be readable by the
+`app` user. When mounting a key file as a bind mount, set the group to GID 1000 and permissions to 640 on the
+host:
 
 ```shell
 chown <owner>:1000 /path/to/gcs-key.json
@@ -117,7 +183,8 @@ backup_helper:
   env_file:
     - ./postgres.env
   environment:
-    GCS_BUCKET: <Google Cloud Storage Bucket name>
+    REMOTE_URL: ":gcs:<Google Cloud Storage Bucket name>"
+    RCLONE_GCS_SERVICE_ACCOUNT_FILE: /keys/gcs-key.json
 ```
 
 With the Backup Helper available as a service in the Docker Stack, we can perform backup tasks. Depending on the
@@ -135,11 +202,11 @@ docker compose run --rm backup_helper full_backup_procedure
 
 This command actually runs the following commands:
 
-- gcs_upload
+- remote_upload
 - backup_clean
 - backup_postgres
 - backup_files
-- gcs_upload
+- remote_upload
 
 The full backup procedure is also the command used for the daily backup.
 
@@ -181,25 +248,40 @@ docker compose run --rm backup_helper restore_files <backup file>
 docker compose run --rm backup_helper backup_clean
 ```
 
-## Google Cloud Storage
+## Remote storage
 
 ### Upload backup
 
 ```shell
-docker compose run --rm backup_helper gcs_upload
+docker compose run --rm backup_helper remote_upload
 ```
 
 ### Download backup
 
 ```shell
-docker compose run --rm backup_helper gcs_download <backup file>
+docker compose run --rm backup_helper remote_download <backup file>
 ```
 
-### List backups on GCS
+### List backups on the remote storage
 
 ```shell
-docker compose run --rm backup_helper gcs_ls
+docker compose run --rm backup_helper remote_ls
 ```
+
+## Migrating from v2.x to v3.0
+
+In version 3.0, the Backup Helper switched from gsutil to [rclone](https://rclone.org) for storage operations.
+Google will no longer include gsutil in the default Google Cloud CLI installation package per March 2027, and
+with rclone the Backup Helper supports many more storage backends than Google Cloud Storage alone.
+
+An existing v2.x setup keeps working without changes: the deprecated `GCS_BUCKET` and `GCS_KEY_FILE_PATH`
+variables are automatically converted to their rclone equivalents, and the `gcs_*` commands remain available
+as aliases. To future-proof your setup:
+
+1. Replace `GCS_BUCKET: <bucket>` with `REMOTE_URL: ":gcs:<bucket>"` (without the `gs://` prefix)
+2. Replace `GCS_KEY_FILE_PATH: <path>` with `RCLONE_GCS_SERVICE_ACCOUNT_FILE: <path>`
+3. Replace the `gcs_upload`, `gcs_download` and `gcs_ls` commands with `remote_upload`, `remote_download` and
+   `remote_ls`, for example in scripts that call the Backup Helper
 
 ## Credits
 
