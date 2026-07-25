@@ -23,6 +23,8 @@
 - Fix supercronic SHA256 checksums not being updated on version bumps: Renovate now
   tracks the version and per-arch checksums together via a custom manager using the
   `github-release-attachments` datasource
+- Build pre-release images for `X.Y.Z-rcN` tags (e.g. `3.0.0-rc1`); the floating major and minor Docker tags
+  only move for stable releases
 
 ## 2.0.4
 
