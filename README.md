@@ -134,7 +134,7 @@ docker compose run --rm backup_helper rclone obscure <password>
 
 The following environment variables are deprecated since version 3.0. They keep working: when set, they are
 automatically converted to the rclone equivalents. See also the
-[migration guide](#migrating-from-v2x-to-v30).
+[migration guide](#migrating-from-v2-to-v3).
 
 | Environment variable | Required | Default            | Description                                                  |
 | -------------------- | -------- | ------------------ | ------------------------------------------------------------ |
@@ -268,7 +268,7 @@ docker compose run --rm backup_helper remote_download <backup file>
 docker compose run --rm backup_helper remote_ls
 ```
 
-## Migrating from v2.x to v3.0
+## Migrating from v2 to v3
 
 In version 3.0, the Backup Helper switched from gsutil to [rclone](https://rclone.org) for storage operations.
 Google will no longer include gsutil in the default Google Cloud CLI installation package per March 2027, and
