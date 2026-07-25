@@ -13,8 +13,8 @@
 - Deprecate `GCS_BUCKET` and `GCS_KEY_FILE_PATH`; they keep working and are converted to `REMOTE_URL` and
   `RCLONE_GCS_SERVICE_ACCOUNT_FILE`
 - Skip the upload with a warning instead of failing when no remote storage is configured
-- Switch base image from `python:3.13-slim` to `debian:bookworm-slim` with digest pinning, shrinking the image
-  by about 20% (arm64 unpacked: 342MB → 273MB)
+- Switch base image from `python:3.13-slim` to `debian:trixie-slim` with digest pinning, shrinking the image
+  by about 20% (arm64 unpacked: 342MB → 272MB)
 - Verify the rclone download against the `SHA256SUMS` file of the rclone release during the Docker build
 - Remove the boto config file generation and `docker/requirements.txt`
 - Track rclone releases with Renovate

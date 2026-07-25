@@ -20,7 +20,7 @@ Docker-based tool for PostgreSQL backups and remote storage sync via rclone. Use
 
 ## Docker
 
-- Base image: `debian:bookworm-slim` (digest pinned)
+- Base image: `debian:trixie-slim` (digest pinned)
 - Multi-arch: linux/amd64 + linux/arm64
 - Build context is project root: `docker buildx build --file docker/Dockerfile .`
 - Supercronic version + SHA256 checksums tracked together by a Renovate custom manager (`github-release-attachments` datasource) in renovate.json

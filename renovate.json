@@ -25,7 +25,7 @@
       "matchPackageNames": [
         "docker.io/debian"
       ],
-      "allowedVersions": "/^bookworm/"
+      "allowedVersions": "/^trixie/"
     }
   ]
 }
