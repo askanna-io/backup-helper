@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+- Update supercronic to v0.2.49
+- Fix the Renovate custom manager for supercronic leaving the amd64 checksum stale, breaking the image build
+
 ## 3.0.1
 
 - Fix uploads to GCS buckets with uniform bucket-level access: rclone sent a per-object ACL by default, which

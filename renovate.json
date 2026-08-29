@@ -12,8 +12,9 @@
         "/docker/Dockerfile$/"
       ],
       "matchStrings": [
-        "ARG SUPERCRONIC_VERSION=(?<currentValue>v?\\d+\\.\\d+\\.\\d+)[\\s\\S]*?ARG SUPERCRONIC_SHA256_AMD64=(?<currentDigest>[a-f0-9]{64})",
-        "ARG SUPERCRONIC_VERSION=(?<currentValue>v?\\d+\\.\\d+\\.\\d+)[\\s\\S]*?ARG SUPERCRONIC_SHA256_ARM64=(?<currentDigest>[a-f0-9]{64})"
+        "ARG SUPERCRONIC_VERSION=(?<currentValue>v?\\d+\\.\\d+\\.\\d+)",
+        "# supercronic-linux-amd64 (?<currentValue>v?\\d+\\.\\d+\\.\\d+)\\nARG SUPERCRONIC_SHA256_AMD64=(?<currentDigest>[a-f0-9]{64})",
+        "# supercronic-linux-arm64 (?<currentValue>v?\\d+\\.\\d+\\.\\d+)\\nARG SUPERCRONIC_SHA256_ARM64=(?<currentDigest>[a-f0-9]{64})"
       ],
       "depNameTemplate": "aptible/supercronic",
       "datasourceTemplate": "github-release-attachments",

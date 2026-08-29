@@ -5,9 +5,11 @@ LABEL maintainer="AskAnna"
 ARG TARGETARCH
 
 # Version and checksums below are updated by Renovate (customManagers in renovate.json)
-ARG SUPERCRONIC_VERSION=v0.2.48
-ARG SUPERCRONIC_SHA256_AMD64=88c1b66b94c486f972fdd1a4d1f901e3e75ff04f749cddd60c5db573e3a33c6c
-ARG SUPERCRONIC_SHA256_ARM64=50ae8755e04fa72812d0a1bc47a112a856811cc91cce7b6c875c378a850788bc
+ARG SUPERCRONIC_VERSION=v0.2.49
+# supercronic-linux-amd64 v0.2.49
+ARG SUPERCRONIC_SHA256_AMD64=a53ae236602c7338aba3fbaff40bda6300eae3b9fedb8261eb06cfe3724430c1
+# supercronic-linux-arm64 v0.2.49
+ARG SUPERCRONIC_SHA256_ARM64=02aa0cb229ba09050cba6638059dadb9eedc2276632ea43d6a57a2f8c1629dd5
 
 # renovate: datasource=github-releases depName=rclone/rclone
 ARG RCLONE_VERSION=v1.75.0
