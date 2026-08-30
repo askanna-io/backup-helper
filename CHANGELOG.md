@@ -2,6 +2,9 @@
 
 ## Unreleased
 
+## 3.0.2
+
+- Update rclone to v1.75.0
 - Update supercronic to v0.2.49
 - Fix the Renovate custom manager for supercronic leaving the amd64 checksum stale, breaking the image build
 
