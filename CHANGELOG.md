@@ -2,6 +2,11 @@
 
 ## Unreleased
 
+## 3.0.3
+
+- Update rclone to v1.75.2
+- Update Debian base image
+
 ## 3.0.2
 
 - Update rclone to v1.75.0
