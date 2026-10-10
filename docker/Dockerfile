@@ -12,7 +12,7 @@ ARG SUPERCRONIC_SHA256_AMD64=a53ae236602c7338aba3fbaff40bda6300eae3b9fedb8261eb0
 ARG SUPERCRONIC_SHA256_ARM64=02aa0cb229ba09050cba6638059dadb9eedc2276632ea43d6a57a2f8c1629dd5
 
 # renovate: datasource=github-releases depName=rclone/rclone
-ARG RCLONE_VERSION=v1.75.0
+ARG RCLONE_VERSION=v1.75.2
 
 RUN apt-get update && apt-get install --no-install-recommends --assume-yes \
         ca-certificates \
